@@ -8,8 +8,6 @@ import router from "./routes";
 
 const app = new Koa();
 
-console.log(router.routes());
-
 app
   .use(bodyParser())
   .use(compress())
