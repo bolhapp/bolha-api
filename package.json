@@ -5,7 +5,10 @@
     "start": "ts-node src/app.ts",
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
-    "lint": "eslint 'src/**/*.{js,ts}'"
+    "lint": "eslint 'src/**/*.{js,ts}'",
+    "db:ui": "yarn drizzle-kit studio",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "yarn db:generate && drizzle-kit migrate"
   },
   "engines": {
     "node": ">= 22.5.1"
@@ -16,10 +19,13 @@
     "@koa/cors": "^5.0.0",
     "@koa/router": "^12.0.1",
     "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.32.2",
+    "eslint-plugin-drizzle": "^0.2.3",
     "koa": "^2.15.3",
     "koa-compress": "^5.1.1",
     "koa-helmet": "^7.0.2",
-    "pino": "^9.3.2"
+    "pino": "^9.3.2",
+    "postgres": "^3.4.4"
   },
   "devDependencies": {
     "@types/koa": "^2.15.0",
@@ -27,8 +33,9 @@
     "@types/koa__cors": "^5",
     "@types/koa__router": "^12",
     "@types/node": "^22.0.2",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.1",
+    "@typescript-eslint/parser": "^8.0.1",
+    "drizzle-kit": "^0.23.2",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
