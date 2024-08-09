@@ -11,10 +11,8 @@ if (!postgresUrl) {
 }
 
 export default {
-  // schema: "./src/db/schemas/*.ts",
+  schema: "./src/db/schemas/*.ts",
   out: "./src/db/migrations",
   dialect: "postgresql",
-  dbCredentials: {
-    url: postgresUrl,
-  },
+  dbCredentials: { url: postgresUrl },
 } satisfies Config;
