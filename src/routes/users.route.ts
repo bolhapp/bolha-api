@@ -54,9 +54,31 @@ export default (router: Router) => {
 
     .delete("/api/v1/auth/logout", (ctx) => (ctx.body = "OK"))
 
+    // oauth endpoints
+    // google
+    .get("/auth/google", passport.authenticate("google"))
     .get(
-      "protected",
-      passport.authenticate("jwt", { session: false }),
-      (ctx) => (ctx.body = "yup"),
+      "/auth/google/callback",
+      passport.authenticate("google", { successRedirect: "/", failureRedirect: "/" }),
+    )
+
+    // facebook
+    .get("/auth/facebook", passport.authenticate("facebook"))
+    .get(
+      "/auth/facebook/callback",
+      passport.authenticate("facebook", { successRedirect: "/", failureRedirect: "/" }),
+    )
+
+    // twitter
+    .get("/auth/twitter", passport.authenticate("twitter"))
+    .get(
+      "/auth/twitter/callback",
+      passport.authenticate("twitter", { successRedirect: "/", failureRedirect: "/" }),
+    )
+
+    .get("/auth/linkedin", passport.authenticate("linkedin"))
+    .get(
+      "/auth/linkedin/callback",
+      passport.authenticate("linkedin", { successRedirect: "/", failureRedirect: "/" }),
     );
 };
