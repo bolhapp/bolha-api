@@ -44,7 +44,7 @@ export default (router: Router) => {
   router
     .post("/api/v1/auth/login", auth.login)
 
-    .post("/api/v1/auth/register", (ctx) => (ctx.body = "OK"))
+    .post("/api/v1/auth/register", auth.register)
 
     .post("/api/v1/auth/register/confirm", (ctx) => (ctx.body = "OK"))
 

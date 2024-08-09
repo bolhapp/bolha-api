@@ -15,6 +15,7 @@ export default function (): Middleware {
       }
 
       //todo: log to wherever
+      console.trace(error);
       ctx.status = 500;
       ctx.body = UNEXPECTED_ERROR;
     }
