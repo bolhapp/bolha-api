@@ -9,7 +9,8 @@ dotenv.config();
 
 import "./db";
 
-import router from "./routes";
+import router from "./routes/index";
+import errorHandler from "./middleware/error";
 
 const app = new Koa();
 
@@ -18,6 +19,7 @@ app
   .use(compress())
   .use(cors())
   .use(helmet())
+  .use(errorHandler())
   .use(router.allowedMethods())
   .use(router.routes());
 
