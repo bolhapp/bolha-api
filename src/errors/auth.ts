@@ -3,7 +3,7 @@ import type { ValidationErrorPayload } from "@/exceptions";
 export const NOT_VERIFIED: ValidationErrorPayload = {
   statusCode: 403,
   statusMessage: "auth.not_verified",
-  errorCode: 2002,
+  errorCode: 2001,
 } as const;
 
 export const INVALID_PARAMS: ValidationErrorPayload = {
@@ -15,5 +15,11 @@ export const INVALID_PARAMS: ValidationErrorPayload = {
 export const EMAIL_TAKEN: ValidationErrorPayload = {
   statusCode: 422,
   statusMessage: "auth.email_taken",
-  errorCode: 2002,
+  errorCode: 2003,
+} as const;
+
+export const INVALID_ACC_CONFIRM_PAYLOAD: ValidationErrorPayload = {
+  statusCode: 422,
+  statusMessage: "auth.invalid_acc_confirm_payload",
+  errorCode: 2004,
 } as const;

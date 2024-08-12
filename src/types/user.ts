@@ -26,3 +26,8 @@ export interface TokenUser {
   email: string;
   id: string;
 }
+
+export interface AccountConfirmationPayload {
+  email: string;
+  token: string;
+}

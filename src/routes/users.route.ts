@@ -9,9 +9,11 @@ export default (router: Router) => {
 
     .post("/api/v1/auth/register", auth.register)
 
-    .post("/api/v1/auth/register/confirm", (ctx) => (ctx.body = "OK"))
+    .get("/api/v1/auth/register/confirm", auth.registerConfirm)
 
-    .post("/api/v1/auth/reset-password/confirm", (ctx) => (ctx.body = "OK"))
+    .get("/api/v1/auth/reset-password", (ctx) => (ctx.body = "OK"))
+
+    .get("/api/v1/auth/reset-password/confirm", (ctx) => (ctx.body = "OK"))
 
     .post("/api/v1/auth/refresh", (ctx) => (ctx.body = "OK"))
 

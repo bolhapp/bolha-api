@@ -1,18 +1,26 @@
 import Joi from "joi";
 import { compareSync } from "bcrypt";
 import type { ParameterizedContext } from "koa";
+import dayjs from "dayjs";
 
 import { users, USER_GENDER } from "@/db/schemas/users.schema";
-import { createUser, getUser } from "@/db/user";
+import { createUser, getUser, verifyUser } from "@/db/user";
 import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
-import { EMAIL_TAKEN, INVALID_PARAMS, NOT_VERIFIED } from "@/errors/auth";
-import type { BaseUser, TokenUser } from "@/types/user";
+import {
+  EMAIL_TAKEN,
+  INVALID_PARAMS,
+  NOT_VERIFIED,
+  INVALID_ACC_CONFIRM_PAYLOAD,
+} from "@/errors/auth";
+import type { AccountConfirmationPayload, BaseUser } from "@/types/user";
 import { UNEXPECTED_ERROR } from "@/errors";
 import { genToken } from "@/utils";
 import { emailValidator, passwordValidator } from "@/utils/validators";
 import { setupTokens } from "@/utils/token";
 import { blacklistToken } from "@/modules/passport";
+import { sendEmail } from "@/services/email";
+import i18n from "@/i18n";
 
 interface LoginPayload {
   email: string;
@@ -76,8 +84,7 @@ export const register = async (ctx: ParameterizedContext) => {
   if (userExists) {
     throw new ValidationError(EMAIL_TAKEN);
   }
-
-  const token = `${genToken(32)}${Date.now()}`;
+  const token = `${genToken(32)}-${dayjs().add(2, "days").unix()}`;
 
   const newUser = await createUser(
     Object.entries(user).reduce((result, [field, value]) => {
@@ -97,8 +104,51 @@ export const register = async (ctx: ParameterizedContext) => {
     throw new ValidationError(UNEXPECTED_ERROR);
   }
 
-  ctx.state = 201;
+  const link = `${process.env.APP_BASE_URL}/api/v1/auth/register/confirm?token=${token}&email=${user.email}`;
+
+  await sendEmail(
+    i18n.__("email.accountConfirm.subject"),
+    { email: user.email, name: user.name },
+    "userActionRequired",
+    {
+      greetings: i18n.__("email.accountConfirm.greetings"),
+      name: user.name || user.email.split("@")[0],
+      body: i18n.__("email.accountConfirm.body"),
+      body2: i18n.__("email.accountConfirm.body2"),
+      confirmAccount: i18n.__("email.accountConfirm.confirmButton"),
+      alternateLink: i18n.__mf("email.accountConfirm.alternativeLink", { link }),
+      link,
+      linkTitle: i18n.__("email.accountConfirm.alternativeLinkTitle"),
+    },
+  );
+
+  ctx.status = 201;
   ctx.body = newUser;
+};
+
+export const registerConfirm = async (ctx: ParameterizedContext) => {
+  const payload = await getValidatedInput<AccountConfirmationPayload>(ctx.request.query, {
+    email: emailValidator,
+    token: Joi.string()
+      .required()
+      .min(33)
+      .pattern(/^[A-Za-z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]{32}-\d{5,}$/),
+  });
+
+  // if 48h have passed since token was created
+  // or if we couldn't update user in db, we return error
+  if (
+    dayjs.unix(Number(payload.token.split("-")[1])).isBefore(dayjs()) ||
+    !(await verifyUser(payload))
+  ) {
+    // throw new ValidationError(INVALID_ACC_CONFIRM_PAYLOAD);
+    ctx.status = 422;
+    ctx.body = i18n.__("email.accountConfirm.invalidToken");
+    return;
+  }
+
+  ctx.status = 200;
+  ctx.body = i18n.__("email.accountConfirm.accountConfirmed");
 };
 
 export const logout = async (ctx: ParameterizedContext) => {

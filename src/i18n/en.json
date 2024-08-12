@@ -1,0 +1,11 @@
+{
+  "email.accountConfirm.greetings": "Welcome!",
+  "email.accountConfirm.subject": "Welcome to LFG!",
+  "email.accountConfirm.body": "There's just one more step before! To be able to login you need to confirm your account by clicking the button above.",
+  "email.accountConfirm.body2": "This link is only valid for 48h",
+  "email.accountConfirm.alternativeLink": "If the link above does not work, use this one",
+  "email.accountConfirm.alternativeLinkTitle": "Link to confirm account",
+  "email.accountConfirm.confirmButton": "Confirm account",
+  "email.accountConfirm.invalidToken": "Token invalid or expired",
+  "email.accountConfirm.accountConfirmed": "Account confirmed. You can now close this tab and login"
+}

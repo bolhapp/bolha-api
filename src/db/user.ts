@@ -5,9 +5,7 @@ import { PgColumn } from "drizzle-orm/pg-core";
 import { db } from "./";
 import { users } from "./schemas/users.schema";
 import type { SelectUser } from "./schemas/users.schema";
-import type { User, BaseUser } from "@/types/user";
-// import type { BaseUser, User, UpdateUserPayload, UserContact } from "@/types/user";
-// import { genToken } from "@/server/utils";
+import type { User, BaseUser, AccountConfirmationPayload } from "@/types/user";
 
 const SALT = 10;
 
@@ -36,4 +34,16 @@ export const createUser = async (payload: BaseUser, token: string): Promise<User
     .returning({ id: users.id, verified: users.verified });
 
   return result[0] as User;
+};
+
+export const verifyUser = async ({
+  email,
+  token,
+}: AccountConfirmationPayload): Promise<boolean> => {
+  const result = await db
+    .update(users)
+    .set({ verified: true, token: null })
+    .where(and(eq(users.token, token), eq(users.email, email)));
+
+  return (result.count || 0) > 0;
 };
