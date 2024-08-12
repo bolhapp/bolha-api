@@ -23,6 +23,7 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.32.2",
     "eslint-plugin-drizzle": "^0.2.3",
+    "i18n": "^0.15.1",
     "joi": "^17.13.3",
     "koa": "^2.15.3",
     "koa-compress": "^5.1.1",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/i18n": "^0",
     "@types/joi": "^17.2.3",
     "@types/koa": "^2.15.0",
     "@types/koa-compress": "^4.0.6",
