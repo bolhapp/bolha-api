@@ -7,21 +7,27 @@ import { createUser, getUser } from "@/db/user";
 import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
 import { EMAIL_TAKEN, INVALID_PARAMS, NOT_VERIFIED } from "@/errors/auth";
-import type { BaseUser } from "@/types/user";
+import type { BaseUser, TokenUser } from "@/types/user";
 import { UNEXPECTED_ERROR } from "@/errors";
 import { genToken } from "@/utils";
 import { emailValidator, passwordValidator } from "@/utils/validators";
-
-interface LoginPayload {
-  email: string;
-  password: string;
-}
+import { setupTokens } from "@/utils/token";
 
 export const login = async (ctx: ParameterizedContext) => {
-  const { email, password } = await getValidatedInput<LoginPayload>(ctx.request.body, {
-    email: emailValidator,
-    password: passwordValidator,
-  });
+  if (!ctx.request?.body) {
+    throw new ValidationError(INVALID_PARAMS);
+  }
+
+  const { email, password } = await getValidatedInput<TokenUser>(
+    {
+      email: sanitizeInput(ctx.request.body.email),
+      password: sanitizeInput(ctx.request.body.password),
+    },
+    {
+      email: emailValidator,
+      password: passwordValidator,
+    },
+  );
 
   const user = await getUser(email, [], {
     password: users.password,
@@ -39,6 +45,11 @@ export const login = async (ctx: ParameterizedContext) => {
 
   // @ts-expect-error - will complain that password must be optional to be able to delete
   delete user.password;
+
+  ctx.body = {
+    user,
+    ...setupTokens(user.email),
+  };
 };
 
 export const register = async (ctx: ParameterizedContext) => {

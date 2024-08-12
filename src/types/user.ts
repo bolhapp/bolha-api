@@ -21,3 +21,8 @@ export interface User extends BaseUser {
   verified: boolean;
   token: string;
 }
+
+export interface TokenUser {
+  email: string;
+  password: string;
+}

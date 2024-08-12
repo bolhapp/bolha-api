@@ -3,42 +3,66 @@ import passport from "koa-passport";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 
 import * as auth from "@/modules/auth";
+import { getUser } from "@/db/user";
+import { UNEXPECTED_ERROR } from "@/errors";
+import { ValidationError } from "@/exceptions";
+
+passport.serializeUser((user, done) => {
+  try {
+    done(null, JSON.stringify(user));
+  } catch (err) {
+    // todo: log somewhere
+    console.error(err);
+    done(err);
+  }
+});
+
+passport.deserializeUser((user: string, done) => {
+  try {
+    done(null, JSON.parse(user));
+  } catch (err) {
+    // todo: log somewhere
+    console.error(err);
+    done(err);
+  }
+});
+
+interface JwToken {
+  email: string;
+  iat: number;
+  exp: number;
+  aud: string;
+  iss: string;
+  sub: string;
+}
 
 passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_SECRET as string,
-      issuer: "accounts.examplesoft.com",
-      audience: "yoursite.net",
+      issuer: "lfg",
+      audience: "lfgapp",
     },
-    function (jwt, done) {
-      console.log("aqui", jwt);
+    async function (jwt: JwToken, done) {
+      try {
+        const user = await getUser(jwt.email);
 
-      done(null, { id: "user" });
-      // try {
-      //   const user = await getUser(jwt, [], {
-      //     password: users.password,
-      //     id: users.id,
-      //     verified: users.verified,
-      //   });
-
-      //   // error
-      //   if (!user || !user.verified || !compareSync(ctx.request.body.password, user!.password)) {
-      //     return done("foo", false);
-      //     // throw Error("fail");
-      //   }
-
-      //   // @ts-ignore
-      //   delete user!.password;
-
-      //   done("foo", user);
-      // } catch (err) {
-      //   done("foo", false);
-      // }
+        // for whatever reason, user doesn't exist in db anymore
+        if (!user) {
+          done(UNEXPECTED_ERROR, user);
+        } else {
+          done(null, user);
+        }
+      } catch (err) {
+        console.error(err);
+        throw new ValidationError(UNEXPECTED_ERROR);
+      }
     },
   ),
 );
+
+export { passport };
 
 export default (router: Router) => {
   router
