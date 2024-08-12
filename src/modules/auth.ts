@@ -12,13 +12,19 @@ import { UNEXPECTED_ERROR } from "@/errors";
 import { genToken } from "@/utils";
 import { emailValidator, passwordValidator } from "@/utils/validators";
 import { setupTokens } from "@/utils/token";
+import { blacklistToken } from "@/modules/passport";
+
+interface LoginPayload {
+  email: string;
+  password: string;
+}
 
 export const login = async (ctx: ParameterizedContext) => {
   if (!ctx.request?.body) {
     throw new ValidationError(INVALID_PARAMS);
   }
 
-  const { email, password } = await getValidatedInput<TokenUser>(
+  const { email, password } = await getValidatedInput<LoginPayload>(
     {
       email: sanitizeInput(ctx.request.body.email),
       password: sanitizeInput(ctx.request.body.password),
@@ -45,11 +51,10 @@ export const login = async (ctx: ParameterizedContext) => {
 
   // @ts-expect-error - will complain that password must be optional to be able to delete
   delete user.password;
+  // @ts-expect-error - will complain that verified must be optional to be able to delete
+  delete user.verified;
 
-  ctx.body = {
-    user,
-    ...setupTokens(user.email),
-  };
+  ctx.body = { user, ...setupTokens(user) };
 };
 
 export const register = async (ctx: ParameterizedContext) => {
@@ -94,4 +99,12 @@ export const register = async (ctx: ParameterizedContext) => {
 
   ctx.state = 201;
   ctx.body = newUser;
+};
+
+export const logout = async (ctx: ParameterizedContext) => {
+  blacklistToken(ctx.request);
+
+  await ctx.logout();
+
+  ctx.body = "ok";
 };

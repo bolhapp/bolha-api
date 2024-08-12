@@ -1,68 +1,7 @@
 import Router from "@koa/router";
-import passport from "koa-passport";
-import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 
+import passport from "@/modules/passport";
 import * as auth from "@/modules/auth";
-import { getUser } from "@/db/user";
-import { UNEXPECTED_ERROR } from "@/errors";
-import { ValidationError } from "@/exceptions";
-
-passport.serializeUser((user, done) => {
-  try {
-    done(null, JSON.stringify(user));
-  } catch (err) {
-    // todo: log somewhere
-    console.error(err);
-    done(err);
-  }
-});
-
-passport.deserializeUser((user: string, done) => {
-  try {
-    done(null, JSON.parse(user));
-  } catch (err) {
-    // todo: log somewhere
-    console.error(err);
-    done(err);
-  }
-});
-
-interface JwToken {
-  email: string;
-  iat: number;
-  exp: number;
-  aud: string;
-  iss: string;
-  sub: string;
-}
-
-passport.use(
-  new JwtStrategy(
-    {
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET as string,
-      issuer: "lfg",
-      audience: "lfgapp",
-    },
-    async function (jwt: JwToken, done) {
-      try {
-        const user = await getUser(jwt.email);
-
-        // for whatever reason, user doesn't exist in db anymore
-        if (!user) {
-          done(UNEXPECTED_ERROR, user);
-        } else {
-          done(null, user);
-        }
-      } catch (err) {
-        console.error(err);
-        throw new ValidationError(UNEXPECTED_ERROR);
-      }
-    },
-  ),
-);
-
-export { passport };
 
 export default (router: Router) => {
   router
@@ -76,7 +15,7 @@ export default (router: Router) => {
 
     .post("/api/v1/auth/refresh", (ctx) => (ctx.body = "OK"))
 
-    .delete("/api/v1/auth/logout", (ctx) => (ctx.body = "OK"))
+    .delete("/api/v1/auth/logout", auth.logout)
 
     // oauth endpoints
     // google

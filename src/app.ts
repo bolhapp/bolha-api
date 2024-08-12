@@ -11,7 +11,7 @@ dotenv.config();
 import "./db";
 
 import router from "./routes/index";
-import { passport } from "./routes/users.route";
+import passport from "./modules/passport";
 import errorHandler from "./middleware/error";
 
 const app = new Koa();

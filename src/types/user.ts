@@ -24,5 +24,5 @@ export interface User extends BaseUser {
 
 export interface TokenUser {
   email: string;
-  password: string;
+  id: string;
 }
