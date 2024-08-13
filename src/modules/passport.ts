@@ -1,91 +1,96 @@
 import passport from "koa-passport";
-import { Strategy as JwtStrategy, ExtractJwt, type JwtFromRequestFunction } from "passport-jwt";
-import type { Request } from "koa";
+import { compareSync } from "bcrypt";
+import { Strategy as LocalStrategy } from "passport-local";
 
+import { emailValidator, passwordValidator } from "@/utils/validators";
+import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { getUser } from "@/db/user";
 import { UNEXPECTED_ERROR } from "@/errors";
+import { INVALID_PARAMS, NOT_VERIFIED } from "@/errors/auth";
 import { ValidationError } from "@/exceptions";
 
-const TOKEN_BLACKLIST: Record<string, number> = {};
-
 passport.serializeUser((user, done) => {
-  try {
-    done(null, JSON.stringify(user));
-  } catch (err) {
-    // todo: log somewhere
-    console.error(err);
-    done(err);
-  }
+  process.nextTick(() => {
+    try {
+      done(null, JSON.stringify(user));
+    } catch (err) {
+      // todo: log somewhere
+      console.error(err);
+      done(err);
+    }
+  });
 });
 
 passport.deserializeUser((user: string, done) => {
-  try {
-    done(null, JSON.parse(user));
-  } catch (err) {
-    // todo: log somewhere
-    console.error(err);
-    done(err);
-  }
+  process.nextTick(() => {
+    try {
+      done(null, JSON.parse(user));
+    } catch (err) {
+      // todo: log somewhere
+      console.error(err);
+      done(err);
+    }
+  });
 });
 
-interface JwToken {
-  user: {
-    email: string;
-  };
-  iat: number;
-  exp: number;
-  aud: string;
-  iss: string;
-  sub: string;
+interface LoginPayload {
+  email: string;
+  password: string;
 }
 
-// custom jwtFromRequest to also check blacklist
-const jwtFromRequest: JwtFromRequestFunction = (request: Request) => {
-  const token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
-
-  if (!token) {
-    return null;
-  }
-
-  if (token in TOKEN_BLACKLIST) {
-    return null;
-  }
-
-  return token;
-};
-
 passport.use(
-  new JwtStrategy(
-    {
-      jwtFromRequest: jwtFromRequest,
-      secretOrKey: process.env.JWT_SECRET as string,
-      issuer: "lfg",
-      audience: "lfgapp",
-    },
-    async function (jwt: JwToken, done) {
-      try {
-        const user = await getUser(jwt.user.email);
+  new LocalStrategy({ usernameField: "email" }, async function (email, password, done) {
+    const payload = await getValidatedInput<LoginPayload>(
+      {
+        email: sanitizeInput(email),
+        password: sanitizeInput(password),
+      },
+      {
+        email: emailValidator,
+        password: passwordValidator,
+      },
+    );
 
-        // for whatever reason, user doesn't exist in db anymore
-        if (!user) {
-          throw new ValidationError(UNEXPECTED_ERROR);
-        } else {
-          done(null, user);
-        }
-      } catch (err) {
-        console.error(err);
-        throw new ValidationError(UNEXPECTED_ERROR);
+    try {
+      const user = await getUser(
+        payload.email,
+        [],
+        [
+          "password",
+          "id",
+          "verified",
+          "name",
+          "gender",
+          "birthday",
+          "token",
+          "bio",
+          "interests",
+          "hobbies",
+          "city",
+          "picUrl",
+          "picThumbnailUrl",
+        ],
+      );
+
+      if (!user || !compareSync(payload.password, user.password)) {
+        throw new ValidationError(INVALID_PARAMS);
       }
-    },
-  ),
+
+      if (!user.verified) {
+        throw new ValidationError(NOT_VERIFIED);
+      }
+
+      // @ts-expect-error - will complain that password must be optional to be able to delete
+      delete user.password;
+      // @ts-expect-error - will complain that verified must be optional to be able to delete
+      delete user.verified;
+
+      done(null, user);
+    } catch (err) {
+      console.error(err);
+      throw new ValidationError(UNEXPECTED_ERROR);
+    }
+  }),
 );
-
-export const blacklistToken = (request: Request) => {
-  const token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
-
-  if (token) {
-    TOKEN_BLACKLIST[token] = Date.now();
-  }
-};
 
 export default passport;

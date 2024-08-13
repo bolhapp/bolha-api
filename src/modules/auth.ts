@@ -1,68 +1,51 @@
 import Joi from "joi";
-import { compareSync } from "bcrypt";
-import type { ParameterizedContext } from "koa";
+import type { Next, ParameterizedContext } from "koa";
 import dayjs from "dayjs";
 
 import { USER_GENDER } from "@/db/schemas/users.schema";
 import { createUser, getUser, verifyUser } from "@/db/user";
 import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
-import {
-  EMAIL_TAKEN,
-  INVALID_PARAMS,
-  NOT_VERIFIED,
-  INVALID_ACC_CONFIRM_PAYLOAD,
-} from "@/errors/auth";
-import type { AccountConfirmationPayload, BaseUser } from "@/types/user";
+import { EMAIL_TAKEN, INVALID_PARAMS } from "@/errors/auth";
+import type { AccountConfirmationPayload, UnregisteredUser } from "@/types/user";
 import { UNEXPECTED_ERROR } from "@/errors";
 import { genToken } from "@/utils";
 import { emailValidator, passwordValidator } from "@/utils/validators";
-import { setupTokens } from "@/utils/token";
-import { blacklistToken } from "@/modules/passport";
 import { sendEmail } from "@/services/email";
 import i18n from "@/i18n";
+import passport from "./passport";
 
-interface LoginPayload {
-  email: string;
-  password: string;
-}
+const authenticate = (ctx: ParameterizedContext, next: Next) => {
+  // needs to be a separate promise because passport.authenticate only accepts callback, not promise
+  // and decided to move to a different function for better readability
+  return new Promise((resolve, reject) => {
+    passport.authenticate("local", (err, user, message) => {
+      console.log(err, user);
+      if (err) {
+        reject(err);
+      } else {
+        resolve(user);
+      }
+    })(ctx, next);
+  });
+};
 
-export const login = async (ctx: ParameterizedContext) => {
+export const login = async (ctx: ParameterizedContext, next: Next) => {
   if (!ctx.request?.body) {
     throw new ValidationError(INVALID_PARAMS);
   }
 
-  const { email, password } = await getValidatedInput<LoginPayload>(
-    {
-      email: sanitizeInput(ctx.request.body.email),
-      password: sanitizeInput(ctx.request.body.password),
-    },
-    {
-      email: emailValidator,
-      password: passwordValidator,
-    },
-  );
-
-  const user = await getUser(email, [], ["password", "id", "verified"]);
-
-  if (!user || !compareSync(password, user.password)) {
+  try {
+    const a = await authenticate(ctx, next);
+    console.log(a);
+    ctx.body = a;
+  } catch (err) {
     throw new ValidationError(INVALID_PARAMS);
   }
-
-  if (!user.verified) {
-    throw new ValidationError(NOT_VERIFIED);
-  }
-
-  // @ts-expect-error - will complain that password must be optional to be able to delete
-  delete user.password;
-  // @ts-expect-error - will complain that verified must be optional to be able to delete
-  delete user.verified;
-
-  ctx.body = { user, ...setupTokens(user) };
 };
 
 export const register = async (ctx: ParameterizedContext) => {
-  const user = await getValidatedInput<BaseUser>(ctx.request.body, {
+  const user = await getValidatedInput<UnregisteredUser>(ctx.request.body, {
     email: emailValidator,
     password: passwordValidator,
 
@@ -90,9 +73,10 @@ export const register = async (ctx: ParameterizedContext) => {
         value = sanitizeInput(value);
       }
 
-      result[field as keyof BaseUser] = value;
+      // @ts-expect-error for whatever reason when i updated the user types this stopped working
+      result[field as keyof UnregisteredUser] = value;
       return result;
-    }, {} as BaseUser),
+    }, {} as UnregisteredUser),
     token,
   );
 
@@ -148,8 +132,6 @@ export const registerConfirm = async (ctx: ParameterizedContext) => {
 };
 
 export const logout = async (ctx: ParameterizedContext) => {
-  blacklistToken(ctx.request);
-
   await ctx.logout();
 
   ctx.body = "ok";

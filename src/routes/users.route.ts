@@ -7,6 +7,8 @@ export default (router: Router) => {
   router
     .post("/api/v1/auth/login", auth.login)
 
+    .get("/teste", (ctx) => (ctx.body = ctx.user))
+
     .post("/api/v1/auth/register", auth.register)
 
     .get("/api/v1/auth/register/confirm", auth.registerConfirm)

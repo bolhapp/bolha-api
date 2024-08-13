@@ -23,3 +23,9 @@ export const INVALID_ACC_CONFIRM_PAYLOAD: ValidationErrorPayload = {
   statusMessage: "auth.invalid_acc_confirm_payload",
   errorCode: 2004,
 } as const;
+
+export const UNAUTHENTICATED_ERROR: ValidationErrorPayload = {
+  statusCode: 422,
+  statusMessage: "auth.unauthenticated",
+  errorCode: 2005,
+} as const;

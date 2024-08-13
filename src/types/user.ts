@@ -4,9 +4,15 @@ export type UserGender = "male" | "female" | "other" | "prefer_not_say";
 
 export type UserAvailbility = any;
 
-export interface BaseUser {
+// includes BE only fields such as password and verified
+export interface FullUser {
+  id: string;
+  verified: boolean;
   email: string;
   password: string;
+  createdAt: number;
+  type: UserType;
+  token?: string;
   name?: string;
   bio?: string;
   gender?: UserGender;
@@ -16,11 +22,9 @@ export interface BaseUser {
   hobbies?: string[];
 }
 
-export interface User extends BaseUser {
-  id: string;
-  verified: boolean;
-  token: string;
-}
+export type User = Omit<FullUser, "password" | "verified" | "createdAt">;
+
+export type UnregisteredUser = Omit<FullUser, "id" | "verified" | "createdAt">;
 
 export interface TokenUser {
   email: string;

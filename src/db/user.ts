@@ -1,11 +1,11 @@
 import { hashSync } from "bcrypt";
-import { and, asc, count, eq } from "drizzle-orm";
-import { PgColumn, PgTable } from "drizzle-orm/pg-core";
+import { and, eq } from "drizzle-orm";
+import type { PgColumn } from "drizzle-orm/pg-core";
 
 import { db } from "./";
 import { users } from "./schemas/users.schema";
 import type { SelectUser } from "./schemas/users.schema";
-import type { User, BaseUser, AccountConfirmationPayload } from "@/types/user";
+import type { User, UnregisteredUser, AccountConfirmationPayload } from "@/types/user";
 
 const SALT = 10;
 
@@ -32,7 +32,10 @@ export const getUser = async <T = SelectUser>(
   return result.length ? (result[0] as T) : undefined;
 };
 
-export const createUser = async (payload: BaseUser, token: string): Promise<User | null> => {
+export const createUser = async (
+  payload: UnregisteredUser,
+  token: string,
+): Promise<User | null> => {
   const result = await db
     .insert(users)
     .values({
@@ -40,7 +43,20 @@ export const createUser = async (payload: BaseUser, token: string): Promise<User
       password: hashSync(payload.password as string, SALT),
       token,
     })
-    .returning({ id: users.id, verified: users.verified });
+    .returning({
+      id: users.id,
+      email: users.email,
+      verified: users.verified,
+      type: users.type,
+      token: users.token,
+      name: users.name,
+      bio: users.bio,
+      gender: users.gender,
+      birthday: users.birthday,
+      city: users.city,
+      interests: users.interests,
+      hobbies: users.hobbies,
+    });
 
   return result[0] as User;
 };
