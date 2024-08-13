@@ -63,7 +63,6 @@ passport.use(
       audience: "lfgapp",
     },
     async function (jwt: JwToken, done) {
-      console.log(jwt);
       try {
         const user = await getUser(jwt.user.email);
 

@@ -3,7 +3,7 @@ import { compareSync } from "bcrypt";
 import type { ParameterizedContext } from "koa";
 import dayjs from "dayjs";
 
-import { users, USER_GENDER } from "@/db/schemas/users.schema";
+import { USER_GENDER } from "@/db/schemas/users.schema";
 import { createUser, getUser, verifyUser } from "@/db/user";
 import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
@@ -43,11 +43,7 @@ export const login = async (ctx: ParameterizedContext) => {
     },
   );
 
-  const user = await getUser(email, [], {
-    password: users.password,
-    id: users.id,
-    verified: users.verified,
-  });
+  const user = await getUser(email, [], ["password", "id", "verified"]);
 
   if (!user || !compareSync(password, user.password)) {
     throw new ValidationError(INVALID_PARAMS);
@@ -111,12 +107,12 @@ export const register = async (ctx: ParameterizedContext) => {
     { email: user.email, name: user.name },
     "userActionRequired",
     {
-      greetings: i18n.__("email.accountConfirm.greetings"),
+      greetings: i18n.__("email.greetings"),
       name: user.name || user.email.split("@")[0],
       body: i18n.__("email.accountConfirm.body"),
       body2: i18n.__("email.accountConfirm.body2"),
       confirmAccount: i18n.__("email.accountConfirm.confirmButton"),
-      alternateLink: i18n.__mf("email.accountConfirm.alternativeLink", { link }),
+      alternateLink: i18n.__mf("email.alternativeLink", { link }),
       link,
       linkTitle: i18n.__("email.accountConfirm.alternativeLinkTitle"),
     },
@@ -143,7 +139,7 @@ export const registerConfirm = async (ctx: ParameterizedContext) => {
   ) {
     // throw new ValidationError(INVALID_ACC_CONFIRM_PAYLOAD);
     ctx.status = 422;
-    ctx.body = i18n.__("email.accountConfirm.invalidToken");
+    ctx.body = i18n.__("email.invalidToken");
     return;
   }
 
@@ -156,5 +152,41 @@ export const logout = async (ctx: ParameterizedContext) => {
 
   await ctx.logout();
 
+  ctx.body = "ok";
+};
+
+export const resetPassword = async (ctx: ParameterizedContext) => {
+  const payload = await getValidatedInput<{ email: string }>(ctx.request.body, {
+    email: emailValidator,
+  });
+
+  const user = await getUser(payload.email, [["verified", true]], ["name"]);
+
+  if (!user) {
+    ctx.body = "ok";
+    ctx.status = 200;
+    return;
+  }
+
+  const token = `${genToken(32)}-${dayjs().add(30, "minutes").unix()}`;
+  const link = `${process.env.APP_BASE_URL}/api/v1/auth/reset-password/confirm?token=${token}&email=${user.email}`;
+
+  await sendEmail(
+    i18n.__("email.resetPassword.subject"),
+    { email: payload.email },
+    "userActionRequired",
+    {
+      greetings: i18n.__("email.greetings"),
+      name: user.name || user.email.split("@")[0],
+      body: i18n.__("email.resetPassword.body"),
+      body2: i18n.__("email.resetPassword.body2"),
+      confirmAccount: i18n.__("email.resetPassword.confirmButton"),
+      alternateLink: i18n.__mf("email.alternativeLink", { link }),
+      link,
+      linkTitle: i18n.__("email.resetPassword.alternativeLinkTitle"),
+    },
+  );
+
+  ctx.status = 200;
   ctx.body = "ok";
 };

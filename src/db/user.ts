@@ -1,6 +1,6 @@
 import { hashSync } from "bcrypt";
 import { and, asc, count, eq } from "drizzle-orm";
-import { PgColumn } from "drizzle-orm/pg-core";
+import { PgColumn, PgTable } from "drizzle-orm/pg-core";
 
 import { db } from "./";
 import { users } from "./schemas/users.schema";
@@ -12,12 +12,21 @@ const SALT = 10;
 export const getUser = async <T = SelectUser>(
   email: string,
   filter: Array<Array<string | any>> = [],
-  fields: Record<string, PgColumn> = {},
+  fields: string[] = [],
 ): Promise<T | undefined> => {
   const result = await db
-    .select({ email: users.email, ...fields })
+    .select({
+      email: users.email,
+      ...fields.reduce<Record<string, PgColumn>>((result, field) => {
+        // @ts-expect-error not really sure how to type this
+        result[field] = users[field];
+
+        return result;
+      }, {}),
+    })
     .from(users)
-    .where(and(eq(users.email, email), ...filter.map(([key, value]) => eq(key, value))))
+    // @ts-expect-error same issue as above
+    .where(and(eq(users.email, email), ...filter.map(([key, value]) => eq(users[key], value))))
     .limit(1);
 
   return result.length ? (result[0] as T) : undefined;
