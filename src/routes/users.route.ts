@@ -7,8 +7,6 @@ export default (router: Router) => {
   router
     .post("/api/v1/auth/login", auth.login)
 
-    .get("/teste", (ctx) => (ctx.body = ctx.user))
-
     .post("/api/v1/auth/register", auth.register)
 
     .get("/api/v1/auth/register/confirm", auth.registerConfirm)
@@ -16,8 +14,6 @@ export default (router: Router) => {
     .patch("/api/v1/auth/reset-password", auth.resetPassword)
 
     .get("/api/v1/auth/reset-password/confirm", (ctx) => (ctx.body = "OK"))
-
-    .post("/api/v1/auth/refresh", (ctx) => (ctx.body = "OK"))
 
     .delete("/api/v1/auth/logout", auth.logout)
 

@@ -36,9 +36,7 @@ export const login = async (ctx: ParameterizedContext, next: Next) => {
   }
 
   try {
-    const a = await authenticate(ctx, next);
-    console.log(a);
-    ctx.body = a;
+    ctx.body = await authenticate(ctx, next);
   } catch (err) {
     throw new ValidationError(INVALID_PARAMS);
   }
