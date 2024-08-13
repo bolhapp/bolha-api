@@ -13,7 +13,7 @@ export default (router: Router) => {
 
     .patch("/api/v1/auth/reset-password", auth.resetPassword)
 
-    .get("/api/v1/auth/reset-password/confirm", (ctx) => (ctx.body = "OK"))
+    .get("/api/v1/auth/reset-password/confirm", auth.resetPasswordConfirm)
 
     .delete("/api/v1/auth/logout", auth.logout)
 

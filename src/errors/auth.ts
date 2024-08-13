@@ -18,9 +18,9 @@ export const EMAIL_TAKEN: ValidationErrorPayload = {
   errorCode: 2003,
 } as const;
 
-export const INVALID_ACC_CONFIRM_PAYLOAD: ValidationErrorPayload = {
+export const INVALID_TOKEN_PAYLOAD: ValidationErrorPayload = {
   statusCode: 422,
-  statusMessage: "auth.invalid_acc_confirm_payload",
+  statusMessage: "auth.INVALID_TOKEN_PAYLOAD",
   errorCode: 2004,
 } as const;
 

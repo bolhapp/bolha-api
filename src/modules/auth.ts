@@ -6,11 +6,11 @@ import { USER_GENDER } from "@/db/schemas/users.schema";
 import { createUser, getUser, verifyUser } from "@/db/user";
 import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
-import { EMAIL_TAKEN, INVALID_PARAMS } from "@/errors/auth";
+import { EMAIL_TAKEN, INVALID_TOKEN_PAYLOAD, INVALID_PARAMS } from "@/errors/auth";
 import type { AccountConfirmationPayload, UnregisteredUser } from "@/types/user";
 import { UNEXPECTED_ERROR } from "@/errors";
 import { genToken } from "@/utils";
-import { emailValidator, passwordValidator } from "@/utils/validators";
+import { emailValidator, passwordValidator, tokenValidator } from "@/utils/validators";
 import { sendEmail } from "@/services/email";
 import i18n from "@/i18n";
 import passport from "./passport";
@@ -107,10 +107,7 @@ export const register = async (ctx: ParameterizedContext) => {
 export const registerConfirm = async (ctx: ParameterizedContext) => {
   const payload = await getValidatedInput<AccountConfirmationPayload>(ctx.request.query, {
     email: emailValidator,
-    token: Joi.string()
-      .required()
-      .min(33)
-      .pattern(/^[A-Za-z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]{32}-\d{5,}$/),
+    token: tokenValidator(),
   });
 
   // if 48h have passed since token was created
@@ -119,7 +116,7 @@ export const registerConfirm = async (ctx: ParameterizedContext) => {
     dayjs.unix(Number(payload.token.split("-")[1])).isBefore(dayjs()) ||
     !(await verifyUser(payload))
   ) {
-    // throw new ValidationError(INVALID_ACC_CONFIRM_PAYLOAD);
+    // throw new ValidationError(INVALID_TOKEN_PAYLOAD);
     ctx.status = 422;
     ctx.body = i18n.__("email.invalidToken");
     return;
@@ -166,6 +163,26 @@ export const resetPassword = async (ctx: ParameterizedContext) => {
       linkTitle: i18n.__("email.resetPassword.alternativeLinkTitle"),
     },
   );
+
+  ctx.status = 200;
+  ctx.body = "ok";
+};
+
+export const resetPasswordConfirm = async (ctx: ParameterizedContext) => {
+  const payload = await getValidatedInput<AccountConfirmationPayload>(ctx.request.query, {
+    email: emailValidator,
+    token: tokenValidator(),
+  });
+
+  // if 48h have passed since token was created
+  // or if we couldn't update user in db, we return error
+  if (
+    dayjs.unix(Number(payload.token.split("-")[1])).isBefore(dayjs()) ||
+    !(await verifyUser(payload))
+  ) {
+    // throw new ValidationError(INVALID_ACC_CONFIRM_PAYLOAD);
+    throw new ValidationError(INVALID_TOKEN_PAYLOAD);
+  }
 
   ctx.status = 200;
   ctx.body = "ok";
