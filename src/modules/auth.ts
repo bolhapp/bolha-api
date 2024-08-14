@@ -19,8 +19,7 @@ const authenticate = (ctx: ParameterizedContext, next: Next) => {
   // needs to be a separate promise because passport.authenticate only accepts callback, not promise
   // and decided to move to a different function for better readability
   return new Promise((resolve, reject) => {
-    passport.authenticate("local", (err, user, message) => {
-      console.log(err, user);
+    passport.authenticate("local", (err, user) => {
       if (err) {
         reject(err);
       } else {

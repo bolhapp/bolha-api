@@ -25,7 +25,7 @@ export const INVALID_TOKEN_PAYLOAD: ValidationErrorPayload = {
 } as const;
 
 export const UNAUTHENTICATED_ERROR: ValidationErrorPayload = {
-  statusCode: 403,
+  statusCode: 401,
   statusMessage: "auth.unauthenticated",
   errorCode: 2005,
 } as const;
