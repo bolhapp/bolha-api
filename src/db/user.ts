@@ -42,6 +42,8 @@ export const createUser = async (
       ...payload,
       password: hashSync(payload.password as string, SALT),
       token,
+      // todo: remove when we add account confirmation
+      verified: true,
     })
     .returning({
       id: users.id,

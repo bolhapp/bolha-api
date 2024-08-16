@@ -80,23 +80,24 @@ export const register = async (ctx: ParameterizedContext) => {
     throw new ValidationError(UNEXPECTED_ERROR);
   }
 
-  const link = `${process.env.APP_BASE_URL}/api/v1/auth/register/confirm?token=${token}&email=${user.email}`;
+  // TODO: disabled to be added at a later stage
+  // const link = `${process.env.APP_BASE_URL}/api/v1/auth/register/confirm?token=${token}&email=${user.email}`;
 
-  await sendEmail(
-    i18n.__("email.accountConfirm.subject"),
-    { email: user.email, name: user.name },
-    "userActionRequired",
-    {
-      greetings: i18n.__("email.greetings"),
-      name: user.name || user.email.split("@")[0],
-      body: i18n.__("email.accountConfirm.body"),
-      body2: i18n.__("email.accountConfirm.body2"),
-      confirmAccount: i18n.__("email.accountConfirm.confirmButton"),
-      alternateLink: i18n.__mf("email.alternativeLink", { link }),
-      link,
-      linkTitle: i18n.__("email.accountConfirm.alternativeLinkTitle"),
-    },
-  );
+  // await sendEmail(
+  //   i18n.__("email.accountConfirm.subject"),
+  //   { email: user.email, name: user.name },
+  //   "userActionRequired",
+  //   {
+  //     greetings: i18n.__("email.greetings"),
+  //     name: user.name || user.email.split("@")[0],
+  //     body: i18n.__("email.accountConfirm.body"),
+  //     body2: i18n.__("email.accountConfirm.body2"),
+  //     confirmAccount: i18n.__("email.accountConfirm.confirmButton"),
+  //     alternateLink: i18n.__mf("email.alternativeLink", { link }),
+  //     link,
+  //     linkTitle: i18n.__("email.accountConfirm.alternativeLinkTitle"),
+  //   },
+  // );
 
   ctx.status = 201;
   ctx.body = newUser;
