@@ -1,14 +1,14 @@
 import type { ParameterizedContext } from "koa";
 import Joi from "joi";
 
-import { getUser, userExists, updateUser } from "@/db/user";
+import { getUser, userExists, updateUser } from "@/db/user.db";
 import { emailValidator } from "@/utils/validators";
 import { getValidatedInput } from "@/utils/request";
 import type { User } from "@/types/user";
 import { USER_GENDER } from "@/db/schemas/users.schema";
 import { ValidationError } from "@/exceptions";
-import { USER_NOT_FOUND } from "@/errors/user";
-import { EMAIL_TAKEN, INVALID_PARAMS } from "@/errors/auth";
+import { USER_NOT_FOUND } from "@/errors/user.errors";
+import { EMAIL_TAKEN, INVALID_PARAMS } from "@/errors/auth.errors";
 
 export const userDetails = async (ctx: ParameterizedContext) => {
   const { email } = await getValidatedInput<{ email: string }>(ctx.params, {

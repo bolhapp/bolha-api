@@ -4,9 +4,9 @@ import { Strategy as LocalStrategy } from "passport-local";
 
 import { emailValidator, passwordValidator } from "@/utils/validators";
 import { getValidatedInput, sanitizeInput } from "@/utils/request";
-import { getUser } from "@/db/user";
-import { UNEXPECTED_ERROR } from "@/errors";
-import { INVALID_PARAMS, NOT_VERIFIED } from "@/errors/auth";
+import { getUser } from "@/db/user.db";
+import { UNEXPECTED_ERROR } from "@/errors/index.errors";
+import { INVALID_PARAMS, NOT_VERIFIED } from "@/errors/auth.errors";
 import { ValidationError } from "@/exceptions";
 
 passport.serializeUser((user, done) => {

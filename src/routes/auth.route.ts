@@ -1,7 +1,7 @@
 import Router from "@koa/router";
 
-import passport from "@/modules/passport";
-import * as auth from "@/modules/auth";
+import passport from "@/modules/passport.module";
+import * as auth from "@/modules/auth.module";
 
 export default (router: Router) => {
   router

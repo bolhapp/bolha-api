@@ -3,17 +3,17 @@ import type { Next, ParameterizedContext } from "koa";
 import dayjs from "dayjs";
 
 import { USER_GENDER } from "@/db/schemas/users.schema";
-import { createUser, getUser, userExists, verifyUser } from "@/db/user";
+import { createUser, getUser, userExists, verifyUser } from "@/db/user.db";
 import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
-import { EMAIL_TAKEN, INVALID_TOKEN_PAYLOAD, INVALID_PARAMS } from "@/errors/auth";
+import { EMAIL_TAKEN, INVALID_TOKEN_PAYLOAD, INVALID_PARAMS } from "@/errors/auth.errors";
 import type { AccountConfirmationPayload, UnregisteredUser } from "@/types/user";
-import { UNEXPECTED_ERROR } from "@/errors";
+import { UNEXPECTED_ERROR } from "@/errors/index.errors";
 import { genToken } from "@/utils";
 import { emailValidator, passwordValidator, tokenValidator } from "@/utils/validators";
 import { sendEmail } from "@/services/email";
 import i18n from "@/i18n";
-import passport from "./passport";
+import passport from "./passport.module";
 
 const authenticate = (ctx: ParameterizedContext, next: Next) => {
   // needs to be a separate promise because passport.authenticate only accepts callback, not promise

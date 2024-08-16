@@ -11,7 +11,7 @@ dotenv.config();
 import "./db";
 
 import router from "./routes/index";
-import passport from "./modules/passport";
+import passport from "./modules/passport.module";
 import errorHandler from "./middleware/error";
 // import authenticationHandler from "./middleware/authentication";
 

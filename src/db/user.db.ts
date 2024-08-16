@@ -2,7 +2,7 @@ import { hashSync } from "bcrypt";
 import { and, eq, sql } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 
-import { db } from "./";
+import { db } from ".";
 import { users } from "./schemas/users.schema";
 import type { SelectUser } from "./schemas/users.schema";
 import type { User, UnregisteredUser, AccountConfirmationPayload } from "@/types/user";

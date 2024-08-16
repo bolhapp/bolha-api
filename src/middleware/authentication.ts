@@ -1,6 +1,6 @@
 import type { Middleware } from "koa";
 
-import { UNAUTHENTICATED_ERROR } from "@/errors/auth";
+import { UNAUTHENTICATED_ERROR } from "@/errors/auth.errors";
 import { ValidationError } from "@/exceptions";
 
 export default function (): Middleware {

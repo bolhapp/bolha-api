@@ -1,6 +1,6 @@
 import Router from "@koa/router";
 
-import * as users from "@/modules/users";
+import * as users from "@/modules/users.module";
 
 export default (router: Router) => {
   router

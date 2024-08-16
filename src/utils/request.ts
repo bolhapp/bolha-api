@@ -1,8 +1,8 @@
 import Joi from "joi";
 
 import { ValidationError } from "@/exceptions";
-import { INVALID_PARAMS } from "@/errors/auth";
-import { NO_PARAMS } from "@/errors";
+import { INVALID_PARAMS } from "@/errors/auth.errors";
+import { NO_PARAMS } from "@/errors/index.errors";
 
 export const getValidatedInput = async <T>(
   payload: Record<string, any>,

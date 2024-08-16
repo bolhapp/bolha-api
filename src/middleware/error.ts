@@ -1,6 +1,6 @@
 import type { Middleware } from "koa";
 
-import { UNEXPECTED_ERROR } from "@/errors";
+import { UNEXPECTED_ERROR } from "@/errors/index.errors";
 import { ValidationError } from "@/exceptions";
 
 export default function (): Middleware {
