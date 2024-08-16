@@ -1,5 +1,5 @@
 import type { ParameterizedContext } from "koa";
-import Joi, { object } from "joi";
+import Joi from "joi";
 
 import { getUser, userExists, updateUser } from "@/db/user";
 import { emailValidator } from "@/utils/validators";
