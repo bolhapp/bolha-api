@@ -3,7 +3,7 @@ import type { Next, ParameterizedContext } from "koa";
 import dayjs from "dayjs";
 
 import { USER_GENDER } from "@/db/schemas/users.schema";
-import { createUser, getUser, verifyUser } from "@/db/user";
+import { createUser, getUser, userExists, verifyUser } from "@/db/user";
 import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
 import { EMAIL_TAKEN, INVALID_TOKEN_PAYLOAD, INVALID_PARAMS } from "@/errors/auth";
@@ -55,11 +55,10 @@ export const register = async (ctx: ParameterizedContext) => {
     city: Joi.string().max(256),
   });
 
-  const userExists = await getUser(user.email);
-
-  if (userExists) {
+  if (await userExists(user.email)) {
     throw new ValidationError(EMAIL_TAKEN);
   }
+
   const token = `${genToken(32)}-${dayjs().add(2, "days").unix()}`;
 
   const newUser = await createUser(

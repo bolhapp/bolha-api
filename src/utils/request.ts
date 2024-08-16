@@ -18,6 +18,7 @@ export const getValidatedInput = async <T>(
   });
 
   if (error) {
+    console.log("aquo? ");
     throw new ValidationError({
       ...INVALID_PARAMS,
       errors: error.details.map((item) => {

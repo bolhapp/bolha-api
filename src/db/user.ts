@@ -1,5 +1,5 @@
 import { hashSync } from "bcrypt";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 
 import { db } from "./";
@@ -54,7 +54,6 @@ export const createUser = async (
       gender: users.gender,
       birthday: users.birthday,
       city: users.city,
-      interests: users.interests,
       hobbies: users.hobbies,
     });
 
@@ -71,4 +70,30 @@ export const verifyUser = async ({
     .where(and(eq(users.token, token), eq(users.email, email)));
 
   return (result.count || 0) > 0;
+};
+
+export const userExists = async (email: string): Promise<boolean> => {
+  const result = await db
+    .select({ count: sql`count(*)` })
+    .from(users)
+    .where(eq(users.email, email));
+
+  return (result[0].count as number) > 0;
+};
+
+export const updateUser = async (email: string, payload: Partial<User>) => {
+  const result = await db.update(users).set(payload).where(eq(users.email, email)).returning({
+    email: users.email,
+    verified: users.verified,
+    type: users.type,
+    token: users.token,
+    name: users.name,
+    bio: users.bio,
+    gender: users.gender,
+    birthday: users.birthday,
+    city: users.city,
+    hobbies: users.hobbies,
+  });
+
+  return result[0];
 };

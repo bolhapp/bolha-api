@@ -34,5 +34,9 @@ export class ValidationError extends Error {
     if (errorCode) {
       this.errorCode = errorCode;
     }
+
+    if (process.env.NODE_ENV === "development") {
+      console.trace(errors, statusCode, statusMessage);
+    }
   }
 }
