@@ -61,20 +61,7 @@ export const register = async (ctx: ParameterizedContext) => {
 
   const token = `${genToken(32)}-${dayjs().add(2, "days").unix()}`;
 
-  const newUser = await createUser(
-    Object.entries(user).reduce((result, [field, value]) => {
-      if (Array.isArray(value)) {
-        value = value.map((v) => sanitizeInput(v));
-      } else if (typeof value === "string") {
-        value = sanitizeInput(value);
-      }
-
-      // @ts-expect-error for whatever reason when i updated the user types this stopped working
-      result[field as keyof UnregisteredUser] = value;
-      return result;
-    }, {} as UnregisteredUser),
-    token,
-  );
+  const newUser = await createUser(user, token);
 
   if (!newUser) {
     throw new ValidationError(UNEXPECTED_ERROR);

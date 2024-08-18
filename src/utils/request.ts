@@ -4,7 +4,7 @@ import { ValidationError } from "@/exceptions";
 import { INVALID_PARAMS } from "@/errors/auth.errors";
 import { NO_PARAMS } from "@/errors/index.errors";
 
-export const getValidatedInput = async <T>(
+export const getValidatedInput = async <T extends Record<string, any>>(
   payload: Record<string, any>,
   schema: Joi.PartialSchemaMap,
 ) => {
@@ -12,7 +12,7 @@ export const getValidatedInput = async <T>(
     throw new ValidationError(NO_PARAMS);
   }
 
-  const { value, error } = Joi.object<T>(schema).validate(payload, {
+  const { value: result, error } = Joi.object<T>(schema).validate(payload, {
     abortEarly: false,
     stripUnknown: true,
   });
@@ -26,7 +26,16 @@ export const getValidatedInput = async <T>(
     });
   }
 
-  return value;
+  return Object.entries(result).reduce<T>((result, [field, value]) => {
+    if (Array.isArray(value)) {
+      value = value.map((v) => (typeof v === "string" ? sanitizeInput(v) : v));
+    } else if (typeof value === "string") {
+      value = sanitizeInput(value);
+    }
+
+    result[field as keyof T] = value;
+    return result;
+  }, {} as T);
 };
 
 export const sanitizeInput = (input: any) => {
