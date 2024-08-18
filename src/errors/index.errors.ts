@@ -11,3 +11,9 @@ export const UNEXPECTED_ERROR: ValidationErrorPayload = {
   errorCode: 1002,
   statusMessage: "unexpected_error",
 } as const;
+
+export const UNSUPPORTED_FORMAT: ValidationErrorPayload = {
+  statusCode: 422,
+  errorCode: 1003,
+  statusMessage: "unsupported_format",
+} as const;

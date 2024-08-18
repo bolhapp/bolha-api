@@ -7,11 +7,12 @@ import {
   index,
   boolean,
   varchar,
-  json,
 } from "drizzle-orm/pg-core";
 import { date } from "drizzle-orm/pg-core";
 
 import type { UserType, UserGender, UserAvailbility } from "@/types/user";
+import { relations } from "drizzle-orm";
+import { userActivities } from "./userActivities.schema";
 
 export const USER_TYPES: Readonly<[UserType, ...UserType[]]> = ["user", "admin"];
 
@@ -52,6 +53,10 @@ export const users = pgTable(
     hobbiesIdx: index("user_hobbies_idx").on(users.hobbies),
   }),
 );
+
+export const userRelations = relations(users, ({ many }) => ({
+  activities: many(userActivities),
+}));
 
 export type InsertUser = typeof users.$inferInsert;
 

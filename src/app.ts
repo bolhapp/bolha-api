@@ -20,7 +20,12 @@ const app = new Koa();
 app.keys = [process.env.SESSION_SECRET as string];
 
 app
-  .use(bodyParser())
+  .use(
+    bodyParser({
+      enableTypes: ["json", "form"],
+      encoding: "utf-8",
+    }),
+  )
   .use(compress())
   .use(cors())
   .use(helmet())

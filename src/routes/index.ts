@@ -3,6 +3,7 @@ import Router from "@koa/router";
 import addAuthRoutes from "./auth.route";
 import addInterestsRoutes from "./interests.route";
 import addUsersRoutes from "./users.route";
+import addActivitiesRoutes from "./activities.route";
 
 const { version } = require("../../package.json");
 
@@ -16,5 +17,6 @@ router
 addAuthRoutes(router);
 addInterestsRoutes(router);
 addUsersRoutes(router);
+addActivitiesRoutes(router);
 
 export default router;

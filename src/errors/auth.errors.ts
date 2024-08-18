@@ -29,3 +29,9 @@ export const UNAUTHENTICATED_ERROR: ValidationErrorPayload = {
   statusMessage: "auth.unauthenticated",
   errorCode: 2005,
 } as const;
+
+export const UNAUTHORIZED_ERROR: ValidationErrorPayload = {
+  statusCode: 403,
+  statusMessage: "auth.unauthorized",
+  errorCode: 2006,
+} as const;
