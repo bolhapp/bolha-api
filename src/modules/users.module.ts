@@ -9,7 +9,7 @@ import { USER_GENDER } from "@/db/schemas/users.schema";
 import { ValidationError } from "@/exceptions";
 import { USER_NOT_FOUND } from "@/errors/user.errors";
 import { EMAIL_TAKEN, INVALID_PARAMS } from "@/errors/auth.errors";
-import { getUserActivities } from "@/db/userActivity.db";
+import { getUserActivities } from "@/db/activity.db";
 
 export const userDetails = async (ctx: ParameterizedContext) => {
   const { email } = await getValidatedInput<{ email: string }>(ctx.params, {
