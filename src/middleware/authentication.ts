@@ -5,6 +5,7 @@ import { ValidationError } from "@/exceptions";
 
 export default function (): Middleware {
   return async (ctx, next) => {
+    // ignore auth routes, user is sobviously not authenticated
     if (ctx.request.url.includes("/auth")) {
       return await next();
     }

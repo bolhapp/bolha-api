@@ -25,6 +25,7 @@ const authenticate = (ctx: ParameterizedContext, next: Next) => {
       if (err) {
         reject(err);
       } else {
+        ctx.login(user); // This triggers the session creation
         resolve(user);
       }
     })(ctx, next);
