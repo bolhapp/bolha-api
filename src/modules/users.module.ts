@@ -9,6 +9,7 @@ import { USER_GENDER } from "@/db/schemas/users.schema";
 import { ValidationError } from "@/exceptions";
 import { USER_NOT_FOUND } from "@/errors/user.errors";
 import { EMAIL_TAKEN, INVALID_PARAMS } from "@/errors/auth.errors";
+import { getUserActivities } from "@/db/userActivity.db";
 
 export const userDetails = async (ctx: ParameterizedContext) => {
   const { email } = await getValidatedInput<{ email: string }>(ctx.params, {
@@ -19,6 +20,7 @@ export const userDetails = async (ctx: ParameterizedContext) => {
     email,
     [],
     [
+      "id",
       "name",
       "gender",
       "birthday",
@@ -77,4 +79,12 @@ export const editUser = async (ctx: ParameterizedContext) => {
   }
 
   ctx.body = await updateUser(authedUser.email, payload);
+};
+
+export const getActivities = async (ctx: ParameterizedContext) => {
+  const payload = await getValidatedInput<{ id: string }>(ctx.params, {
+    id: Joi.string().required(),
+  });
+
+  ctx.body = await getUserActivities(payload.id);
 };

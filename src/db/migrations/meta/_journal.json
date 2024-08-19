@@ -15,6 +15,20 @@
       "when": 1723987270015,
       "tag": "0001_talented_riptide",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1724086553825,
+      "tag": "0002_lazy_earthquake",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1724086579211,
+      "tag": "0003_powerful_aqueduct",
+      "breakpoints": true
     }
   ]
 }

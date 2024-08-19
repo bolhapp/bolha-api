@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { File } from "@koa/multer";
 import type { ParameterizedContext } from "koa";
 
 import { getValidatedInput } from "@/utils/request";
@@ -8,24 +9,32 @@ import { ACTIVITY_DIFICULTY } from "@/db/schemas/activities.schema";
 import { createActivity, updateActivity } from "@/db/activity.db";
 import type { BaseActivity } from "@/types/activity";
 import { uploadFile } from "@/services/firebase";
-import { File } from "@koa/multer";
+import { createUserActivity } from "@/db/userActivity.db";
 
 export const create = async (ctx: ParameterizedContext) => {
   const activity = await getValidatedInput<BaseActivity>(ctx.request.body, {
     name: Joi.string().max(256).required(),
     description: Joi.string().required(),
     online: Joi.boolean().required(),
-    address: Joi.string().max(256).required(),
-    categories: Joi.array().items(Joi.string().max(256)).required(),
-    participants: Joi.array().items(Joi.string().max(256)).required(),
+    address: Joi.when("online", {
+      is: true,
+      then: Joi.string().max(256).required(),
+      otherwise: Joi.string().max(256),
+    }),
+    categories: Joi.string()
+      .custom((value, helper) => {
+        try {
+          return value.split(",").map((i: string) => i.trim());
+        } catch (err) {
+          return helper.error("any.invalid");
+        }
+      })
+      .required(),
+    difficulty: Joi.string()
+      .valid(...ACTIVITY_DIFICULTY)
+      .required(),
     maxParticipants: Joi.number().required(),
-    difficulty: Joi.array().items(
-      Joi.string()
-        .max(15)
-        .valid(...ACTIVITY_DIFICULTY)
-        .required(),
-    ),
-    date: Joi.date().required(),
+    date: Joi.date().iso().min("now").required(),
     restrictions: Joi.string(),
     extraDetails: Joi.string(),
   });
@@ -35,6 +44,8 @@ export const create = async (ctx: ParameterizedContext) => {
   if (!newActivity) {
     throw new ValidationError(UNEXPECTED_ERROR);
   }
+
+  await createUserActivity(ctx.user!.id, newActivity.id);
 
   // upload pics if they exist
   if (ctx.files?.length) {
