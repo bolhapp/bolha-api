@@ -1,10 +1,11 @@
 import Joi from "joi";
 import type { Next, ParameterizedContext } from "koa";
 import dayjs from "dayjs";
+import type { File } from "@koa/multer";
 
 import { USER_GENDER } from "@/db/schemas/users.schema";
-import { createUser, getUser, userExists, verifyUser } from "@/db/user.db";
-import { getValidatedInput, sanitizeInput } from "@/utils/request";
+import { createUser, getUser, updateUser, userExists, verifyUser } from "@/db/user.db";
+import { getValidatedInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
 import { EMAIL_TAKEN, INVALID_TOKEN_PAYLOAD, INVALID_PARAMS } from "@/errors/auth.errors";
 import type { AccountConfirmationPayload, UnregisteredUser } from "@/types/user";
@@ -14,6 +15,7 @@ import { emailValidator, passwordValidator, tokenValidator } from "@/utils/valid
 import { sendEmail } from "@/services/email";
 import i18n from "@/i18n";
 import passport from "./passport.module";
+import { uploadFile } from "@/services/firebase";
 
 const authenticate = (ctx: ParameterizedContext, next: Next) => {
   // needs to be a separate promise because passport.authenticate only accepts callback, not promise
@@ -65,6 +67,15 @@ export const register = async (ctx: ParameterizedContext) => {
 
   if (!newUser) {
     throw new ValidationError(UNEXPECTED_ERROR);
+  }
+
+  // upload pics if they exist
+  if (ctx.files?.length) {
+    const url = await uploadFile(ctx.request.file as File, ctx.user!.id);
+
+    newUser["picUrl"] = url;
+
+    await updateUser(newUser.id, { picUrl: url });
   }
 
   // TODO: disabled to be added at a later stage

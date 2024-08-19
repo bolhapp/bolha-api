@@ -2,12 +2,13 @@ import Router from "@koa/router";
 
 import passport from "@/modules/passport.module";
 import * as auth from "@/modules/auth.module";
+import multer from "@/services/multer";
 
 export default (router: Router) => {
   router
     .post("/api/v1/auth/login", auth.login)
 
-    .post("/api/v1/auth/register", auth.register)
+    .post("/api/v1/auth/register", multer.single("pic"), auth.register)
 
     .get("/api/v1/auth/register/confirm", auth.registerConfirm)
 

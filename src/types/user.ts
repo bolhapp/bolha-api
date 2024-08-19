@@ -22,6 +22,7 @@ export interface FullUser extends UserDetails {
   password: string;
   createdAt: number;
   type: UserType;
+  picUrl?: string;
   token?: string;
 }
 

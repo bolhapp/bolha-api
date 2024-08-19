@@ -5,7 +5,7 @@ import type { PgColumn } from "drizzle-orm/pg-core";
 import { db } from ".";
 import { users } from "./schemas/users.schema";
 import type { SelectUser } from "./schemas/users.schema";
-import type { User, UnregisteredUser, AccountConfirmationPayload } from "@/types/user";
+import type { User, UnregisteredUser, AccountConfirmationPayload, FullUser } from "@/types/user";
 
 const SALT = 10;
 
@@ -85,6 +85,7 @@ export const userExists = async (email: string): Promise<boolean> => {
 
 export const updateUser = async (email: string, payload: Partial<User>) => {
   const result = await db.update(users).set(payload).where(eq(users.email, email)).returning({
+    id: users.id,
     email: users.email,
     verified: users.verified,
     type: users.type,
