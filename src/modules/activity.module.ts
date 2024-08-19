@@ -6,7 +6,7 @@ import { getValidatedInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
 import { ACTIVITY_DIFICULTY } from "@/db/schemas/activities.schema";
-import { createActivity, updateActivity } from "@/db/activity.db";
+import { createActivity, createActivityRequest, updateActivity } from "@/db/activity.db";
 import type { BaseActivity } from "@/types/activity";
 import { uploadFile } from "@/services/firebase";
 
@@ -52,5 +52,20 @@ export const create = async (ctx: ParameterizedContext) => {
   }
 
   ctx.status = 201;
-  ctx.body = 200;
+  ctx.body = newActivity;
+};
+
+export const signup = async (ctx: ParameterizedContext) => {
+  const request = await getValidatedInput(ctx.params, {
+    id: Joi.string().max(256).required(),
+  });
+
+  const newRequest = await createActivityRequest(ctx.user!.id, request.id);
+
+  if (!newRequest) {
+    throw new ValidationError(UNEXPECTED_ERROR);
+  }
+
+  ctx.status = 201;
+  ctx.body = newRequest;
 };

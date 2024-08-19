@@ -4,5 +4,8 @@ import * as activity from "@/modules/activity.module";
 import multer from "@/services/multer";
 
 export default (router: Router) => {
-  router.post("/api/v1/activities", multer.any(), activity.create);
+  router
+    .post("/api/v1/activities", multer.any(), activity.create)
+
+    .post("/api/v1/activities/:id/signup", activity.signup);
 };

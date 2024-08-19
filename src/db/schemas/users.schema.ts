@@ -13,6 +13,7 @@ import { date } from "drizzle-orm/pg-core";
 import type { UserType, UserGender, UserAvailbility } from "@/types/user";
 import { relations } from "drizzle-orm";
 import { userActivities } from "./userActivities.schema";
+import { activityRequests } from "./activities.schema";
 
 export const USER_TYPES: Readonly<[UserType, ...UserType[]]> = ["user", "admin"];
 
@@ -56,6 +57,7 @@ export const users = pgTable(
 
 export const userRelations = relations(users, ({ many }) => ({
   activities: many(userActivities),
+  activityRequestId: many(activityRequests),
 }));
 
 export type InsertUser = typeof users.$inferInsert;

@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from ".";
-import { activities } from "./schemas/activities.schema";
+import { activities, activityRequests } from "./schemas/activities.schema";
 import { userActivities } from "./schemas/userActivities.schema";
 import type { Activity, BaseActivity } from "@/types/activity";
 
@@ -79,4 +79,14 @@ export const getUserActivities = async (userId: string) => {
     .where(eq(userActivities.userId, userId));
 
   return result;
+};
+
+export const createActivityRequest = async (userId: string, activityId: string) => {
+  const result = await db.insert(activityRequests).values({ userId, activityId }).returning({
+    id: activityRequests.id,
+    state: activityRequests.state,
+    createdAt: activityRequests.createdAt,
+  });
+
+  return result[0];
 };

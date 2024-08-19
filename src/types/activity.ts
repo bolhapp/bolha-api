@@ -25,3 +25,5 @@ export interface Activity extends BaseActivity {
   updatedAt?: Date;
   pics?: string[];
 }
+
+export type ActivityRequestState = "pending" | "rejected" | "accepted";
