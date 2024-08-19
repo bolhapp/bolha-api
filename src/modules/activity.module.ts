@@ -9,7 +9,6 @@ import { ACTIVITY_DIFICULTY } from "@/db/schemas/activities.schema";
 import { createActivity, updateActivity } from "@/db/activity.db";
 import type { BaseActivity } from "@/types/activity";
 import { uploadFile } from "@/services/firebase";
-import { createUserActivity } from "@/db/userActivity.db";
 
 export const create = async (ctx: ParameterizedContext) => {
   const activity = await getValidatedInput<BaseActivity>(ctx.request.body, {
@@ -44,8 +43,6 @@ export const create = async (ctx: ParameterizedContext) => {
   if (!newActivity) {
     throw new ValidationError(UNEXPECTED_ERROR);
   }
-
-  await createUserActivity(ctx.user!.id, newActivity.id);
 
   // upload pics if they exist
   if (ctx.files?.length) {

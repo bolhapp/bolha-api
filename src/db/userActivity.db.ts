@@ -4,10 +4,6 @@ import { db } from "./";
 import { activities } from "./schemas/activities.schema";
 import { userActivities } from "./schemas/userActivities.schema";
 
-export const createUserActivity = async (userId: string, activityId: string) => {
-  await db.insert(userActivities).values({ userId, activityId });
-};
-
 export const getUserActivities = async (userId: string) => {
   const result = await db
     .select({
