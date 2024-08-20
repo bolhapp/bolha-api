@@ -30,13 +30,13 @@ jobs:
     - name: Build project
       run: npm run build
 
-    - name: Deploy to server
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        SSH_HOST: ${{ secrets.SSH_HOST }}
-        SSH_USER: ${{ secrets.SSH_USER }}
-      run: |
-        echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
-        ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
-        scp -r dist/* $SSH_USER@$SSH_HOST:/path/to/deployment/directory
-        ssh $SSH_USER@$SSH_HOST 'pm2 reload all'
+    # - name: Deploy to server
+    #   env:
+    #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     SSH_HOST: ${{ secrets.SSH_HOST }}
+    #     SSH_USER: ${{ secrets.SSH_USER }}
+    #   run: |
+    #     echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    #     ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+    #     scp -r dist/* $SSH_USER@$SSH_HOST:/path/to/deployment/directory
+    #     ssh $SSH_USER@$SSH_HOST 'pm2 reload all'
