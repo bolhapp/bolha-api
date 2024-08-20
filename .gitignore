@@ -10,6 +10,7 @@ yarn-error.log*
 *.log
 
 .env
+.env.prod
 
 tmp
 serviceAccount.json
