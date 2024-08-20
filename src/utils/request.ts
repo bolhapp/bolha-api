@@ -4,7 +4,7 @@ import { ValidationError } from "@/exceptions";
 import { INVALID_PARAMS } from "@/errors/auth.errors";
 import { NO_PARAMS } from "@/errors/index.errors";
 
-export const getValidatedInput = async <T extends Record<string, any>>(
+export const getValidatedInput = <T extends Record<string, any>>(
   payload: Record<string, any>,
   schema: Joi.PartialSchemaMap,
 ) => {
@@ -20,9 +20,7 @@ export const getValidatedInput = async <T extends Record<string, any>>(
   if (error) {
     throw new ValidationError({
       ...INVALID_PARAMS,
-      errors: error.details.map((item) => {
-        return { field: item.path.join("."), error: item.message };
-      }),
+      errors: error.details.map((item) => ({ field: item.path.join("."), error: item.message })),
     });
   }
 

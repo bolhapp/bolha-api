@@ -103,7 +103,7 @@ export const register = async (ctx: ParameterizedContext) => {
 };
 
 export const registerConfirm = async (ctx: ParameterizedContext) => {
-  const payload = await getValidatedInput<AccountConfirmationPayload>(ctx.request.query, {
+  const payload = getValidatedInput<AccountConfirmationPayload>(ctx.request.query, {
     email: emailValidator,
     token: tokenValidator(),
   });
@@ -131,7 +131,7 @@ export const logout = async (ctx: ParameterizedContext) => {
 };
 
 export const resetPassword = async (ctx: ParameterizedContext) => {
-  const payload = await getValidatedInput<{ email: string }>(ctx.request.body, {
+  const payload = getValidatedInput<{ email: string }>(ctx.request.body, {
     email: emailValidator,
   });
 
@@ -167,7 +167,7 @@ export const resetPassword = async (ctx: ParameterizedContext) => {
 };
 
 export const resetPasswordConfirm = async (ctx: ParameterizedContext) => {
-  const payload = await getValidatedInput<AccountConfirmationPayload>(ctx.request.query, {
+  const payload = getValidatedInput<AccountConfirmationPayload>(ctx.request.query, {
     email: emailValidator,
     token: tokenValidator(),
   });

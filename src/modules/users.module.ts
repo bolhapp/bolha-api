@@ -12,7 +12,7 @@ import { EMAIL_TAKEN, INVALID_PARAMS } from "@/errors/auth.errors";
 import { getUserActivities } from "@/db/activity.db";
 
 export const userDetails = async (ctx: ParameterizedContext) => {
-  const { email } = await getValidatedInput<{ email: string }>(ctx.params, {
+  const { email } = getValidatedInput<{ email: string }>(ctx.params, {
     email: emailValidator,
   });
 
@@ -46,11 +46,11 @@ export const editUser = async (ctx: ParameterizedContext) => {
     throw new ValidationError(INVALID_PARAMS);
   }
 
-  const authedUser = await getValidatedInput<{ email: string }>(ctx.params, {
+  const authedUser = getValidatedInput<{ email: string }>(ctx.params, {
     email: emailValidator,
   });
 
-  const payload = await getValidatedInput<Partial<User>>(ctx.request.body, {
+  const payload = getValidatedInput<Partial<User>>(ctx.request.body, {
     email: emailValidator.optional(),
 
     name: Joi.string().max(512),
@@ -82,7 +82,7 @@ export const editUser = async (ctx: ParameterizedContext) => {
 };
 
 export const getActivities = async (ctx: ParameterizedContext) => {
-  const payload = await getValidatedInput<{ id: string }>(ctx.params, {
+  const payload = getValidatedInput<{ id: string }>(ctx.params, {
     id: Joi.string().required(),
   });
 

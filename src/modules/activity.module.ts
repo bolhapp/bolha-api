@@ -11,7 +11,7 @@ import type { BaseActivity } from "@/types/activity";
 import { uploadFile } from "@/services/firebase";
 
 export const create = async (ctx: ParameterizedContext) => {
-  const activity = await getValidatedInput<BaseActivity>(ctx.request.body, {
+  const activity = getValidatedInput<BaseActivity>(ctx.request.body, {
     name: Joi.string().max(256).required(),
     description: Joi.string().required(),
     online: Joi.boolean().required(),
@@ -56,7 +56,7 @@ export const create = async (ctx: ParameterizedContext) => {
 };
 
 export const signup = async (ctx: ParameterizedContext) => {
-  const request = await getValidatedInput(ctx.params, {
+  const request = getValidatedInput(ctx.params, {
     id: Joi.string().max(256).required(),
   });
 
