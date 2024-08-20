@@ -24,6 +24,7 @@ export interface FullUser extends UserDetails {
   type: UserType;
   picUrl?: string;
   token?: string;
+  accessToken?: string;
 }
 
 export type User = Omit<FullUser, "password" | "verified" | "createdAt">;

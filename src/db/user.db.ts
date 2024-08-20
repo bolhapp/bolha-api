@@ -45,19 +45,7 @@ export const createUser = async (
       // todo: remove when we add account confirmation
       verified: true,
     })
-    .returning({
-      id: users.id,
-      email: users.email,
-      verified: users.verified,
-      type: users.type,
-      token: users.token,
-      name: users.name,
-      bio: users.bio,
-      gender: users.gender,
-      birthday: users.birthday,
-      city: users.city,
-      hobbies: users.hobbies,
-    });
+    .returning({ id: users.id, email: users.email });
 
   return result[0] as User;
 };

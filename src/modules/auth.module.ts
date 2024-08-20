@@ -124,10 +124,8 @@ export const register = async (ctx: ParameterizedContext) => {
   //   },
   // );
 
-  ctx.login(user); // This triggers the session creation
-
   ctx.status = 201;
-  ctx.body = newUser;
+  ctx.body = { user: newUser, token: signToken(user.email) };
 };
 
 export const registerConfirm = async (ctx: ParameterizedContext) => {
