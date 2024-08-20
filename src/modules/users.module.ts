@@ -27,7 +27,6 @@ export const userDetails = async (ctx: ParameterizedContext) => {
       "token",
       "bio",
       "interests",
-      "hobbies",
       "city",
       "picUrl",
       "picThumbnailUrl",
@@ -58,7 +57,6 @@ export const editUser = async (ctx: ParameterizedContext) => {
     birthday: Joi.date(),
     bio: Joi.string().max(5000),
     interests: Joi.array().items(Joi.string()),
-    hobbies: Joi.array().items(Joi.string()),
     city: Joi.string().max(256),
   });
 

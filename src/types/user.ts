@@ -11,7 +11,6 @@ export interface UserDetails {
   birthday?: string;
   city?: string;
   interests?: string[];
-  hobbies?: string[];
 }
 
 // includes BE only fields such as password and verified
