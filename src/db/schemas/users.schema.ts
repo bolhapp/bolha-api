@@ -41,7 +41,6 @@ export const users = pgTable(
     token: varchar("token", { length: 128 }),
     bio: text("bio"),
     interests: text("locations").array().$type<string[]>(),
-    hobbies: text("hobbies").array().$type<string[]>(),
     city: varchar("city", { length: 256 }),
     picUrl: text("pic_url"),
     picThumbnailUrl: text("pic_thumbnail_url"),
@@ -51,7 +50,6 @@ export const users = pgTable(
     idIdx: uniqueIndex("user_id_idx").on(users.id),
     emailIdx: uniqueIndex("user_email_idx").on(users.email),
     interestsIdx: index("user_interests_idx").on(users.interests),
-    hobbiesIdx: index("user_hobbies_idx").on(users.hobbies),
   }),
 );
 

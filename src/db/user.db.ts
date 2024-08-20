@@ -95,7 +95,6 @@ export const updateUser = async (email: string, payload: Partial<User>) => {
     gender: users.gender,
     birthday: users.birthday,
     city: users.city,
-    hobbies: users.hobbies,
   });
 
   return result[0];
