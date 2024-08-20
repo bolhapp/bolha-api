@@ -3,7 +3,6 @@ import Koa from "koa";
 import bodyParser from "@koa/bodyparser";
 import helmet from "koa-helmet";
 import compress from "koa-compress";
-import session from "koa-session";
 import cors from "@koa/cors";
 
 dotenv.config();
@@ -17,28 +16,14 @@ import authenticationHandler from "./middleware/authentication";
 
 const app = new Koa();
 
-app.keys = [process.env.SESSION_SECRET as string];
-
 app
 
   .use(compress())
   .use(cors())
   .use(helmet())
-  .use(
-    session(
-      {
-        key: "sess",
-        signed: true, // whether the cookie is signed to prevent tampering
-        rolling: true,
-        renew: true,
-      },
-      app,
-    ),
-  )
   .use(bodyParser())
 
   .use(passport.initialize())
-  .use(passport.session())
   // custom middelware
   .use(errorHandler())
   .use(authenticationHandler())

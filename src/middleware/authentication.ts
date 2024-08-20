@@ -1,7 +1,8 @@
 import type { Middleware } from "koa";
 
-import { UNAUTHENTICATED_ERROR } from "@/errors/auth.errors";
+import passport from "@/modules/passport.module";
 import { ValidationError } from "@/exceptions";
+import { UNAUTHENTICATED_ERROR } from "@/errors/auth.errors";
 
 export default function (): Middleware {
   return async (ctx, next) => {
@@ -10,11 +11,14 @@ export default function (): Middleware {
       return await next();
     }
 
-    if (!ctx.isAuthenticated()) {
-      throw new ValidationError(UNAUTHENTICATED_ERROR);
-    }
+    await passport.authenticate("jwt", { session: false }, (err, user) => {
+      if (!user) {
+        throw new ValidationError(UNAUTHENTICATED_ERROR);
+      }
 
-    ctx.user = ctx.state.user;
-    await next();
+      ctx.user = user;
+
+      next();
+    })(ctx, next);
   };
 }

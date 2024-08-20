@@ -1,96 +1,54 @@
 import passport from "koa-passport";
-import { compareSync } from "bcrypt";
-import { Strategy as LocalStrategy } from "passport-local";
+import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 
-import { emailValidator, passwordValidator } from "@/utils/validators";
-import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { getUser } from "@/db/user.db";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
-import { INVALID_PARAMS, NOT_VERIFIED } from "@/errors/auth.errors";
 import { ValidationError } from "@/exceptions";
+import { UNAUTHENTICATED_ERROR } from "@/errors/auth.errors";
 
 passport.serializeUser((user, done) => {
-  process.nextTick(() => {
-    try {
-      done(null, JSON.stringify(user));
-    } catch (err) {
-      // todo: log somewhere
-      console.error(err);
-      done(err);
-    }
-  });
+  try {
+    done(null, JSON.stringify(user));
+  } catch (err) {
+    // todo: log somewhere
+    console.error(err);
+    done(err);
+  }
 });
 
 passport.deserializeUser((user: string, done) => {
-  process.nextTick(() => {
-    try {
-      done(null, JSON.parse(user));
-    } catch (err) {
-      // todo: log somewhere
-      console.error(err);
-      done(err);
-    }
-  });
+  try {
+    done(null, JSON.parse(user));
+  } catch (err) {
+    // todo: log somewhere
+    console.error(err);
+    done(err);
+  }
 });
 
-interface LoginPayload {
-  email: string;
-  password: string;
-}
-
 passport.use(
-  new LocalStrategy({ usernameField: "email" }, async function (email, password, done) {
-    const payload = await getValidatedInput<LoginPayload>(
-      {
-        email: sanitizeInput(email),
-        password: sanitizeInput(password),
-      },
-      {
-        email: emailValidator,
-        password: passwordValidator,
-      },
-    );
+  new JwtStrategy(
+    {
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: process.env.JWT_SECRET as string,
+      audience: ["lfgapp"],
+      issuer: "lfgapp",
+    },
+    async function (jwt, done) {
+      try {
+        const user = await getUser(jwt.email);
 
-    try {
-      const user = await getUser(
-        payload.email,
-        [],
-        [
-          "password",
-          "id",
-          "verified",
-          "name",
-          "gender",
-          "birthday",
-          "token",
-          "bio",
-          "interests",
-          "hobbies",
-          "city",
-          "picUrl",
-          "picThumbnailUrl",
-        ],
-      );
+        if (!user) {
+          return done(UNAUTHENTICATED_ERROR, false);
+        }
 
-      if (!user || !compareSync(payload.password, user.password)) {
-        throw new ValidationError(INVALID_PARAMS);
+        done(null, user);
+      } catch (err) {
+        console.error(err);
+        throw new ValidationError(UNEXPECTED_ERROR);
       }
-
-      if (!user.verified) {
-        throw new ValidationError(NOT_VERIFIED);
-      }
-
-      // @ts-expect-error - will complain that password must be optional to be able to delete
-      delete user.password;
-      // @ts-expect-error - will complain that verified must be optional to be able to delete
-      delete user.verified;
-
-      done(null, user);
-    } catch (err) {
-      console.error(err);
-      throw new ValidationError(UNEXPECTED_ERROR);
-    }
-  }),
+    },
+  ),
 );
 
 export default passport;

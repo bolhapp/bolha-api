@@ -1,51 +1,87 @@
 import Joi from "joi";
 import type { Next, ParameterizedContext } from "koa";
+import { compareSync } from "bcrypt";
 import dayjs from "dayjs";
-import type { File } from "@koa/multer";
 
 import { USER_GENDER } from "@/db/schemas/users.schema";
 import { createUser, getUser, updateUser, userExists, verifyUser } from "@/db/user.db";
-import { getValidatedInput } from "@/utils/request";
+import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
-import { EMAIL_TAKEN, INVALID_TOKEN_PAYLOAD, INVALID_PARAMS } from "@/errors/auth.errors";
+import {
+  EMAIL_TAKEN,
+  INVALID_TOKEN_PAYLOAD,
+  INVALID_PARAMS,
+  NOT_VERIFIED,
+} from "@/errors/auth.errors";
 import type { AccountConfirmationPayload, UnregisteredUser } from "@/types/user";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
 import { genToken } from "@/utils";
 import { emailValidator, passwordValidator, tokenValidator } from "@/utils/validators";
 import { sendEmail } from "@/services/email";
 import i18n from "@/i18n";
+import { signToken } from "@/utils/token";
 import passport from "./passport.module";
-import { uploadFile } from "@/services/firebase";
 
-const authenticate = (ctx: ParameterizedContext, next: Next) => {
-  // needs to be a separate promise because passport.authenticate only accepts callback, not promise
-  // and decided to move to a different function for better readability
-  return new Promise((resolve, reject) => {
-    passport.authenticate("local", (err, user) => {
-      if (err) {
-        reject(err);
-      } else {
-        ctx.login(user); // This triggers the session creation
-        resolve(user);
-      }
-    })(ctx, next);
-  });
-};
+interface LoginPayload {
+  email: string;
+  password: string;
+}
 
 export const login = async (ctx: ParameterizedContext, next: Next) => {
   if (!ctx.request?.body) {
     throw new ValidationError(INVALID_PARAMS);
   }
 
+  const payload = getValidatedInput<LoginPayload>(
+    {
+      email: sanitizeInput(ctx.request.body.email),
+      password: sanitizeInput(ctx.request.body.password),
+    },
+    {
+      email: emailValidator,
+      password: passwordValidator,
+    },
+  );
+
   try {
-    ctx.body = await authenticate(ctx, next);
+    const user = await getUser(
+      payload.email,
+      [],
+      [
+        "id",
+        "name",
+        "gender",
+        "birthday",
+        "bio",
+        "interests",
+        "city",
+        "picUrl",
+        "password",
+        "verified",
+      ],
+    );
+
+    if (!user || !compareSync(payload.password, user.password)) {
+      throw new ValidationError(INVALID_PARAMS);
+    }
+
+    if (!user.verified) {
+      throw new ValidationError(NOT_VERIFIED);
+    }
+
+    // @ts-expect-error - will complain that password must be optional to be able to delete
+    delete user.password;
+    // @ts-expect-error - will complain that verified must be optional to be able to delete
+    delete user.verified;
+
+    ctx.body = { user, token: signToken(user.email) };
   } catch (err) {
     throw new ValidationError(INVALID_PARAMS);
   }
 };
 
 export const register = async (ctx: ParameterizedContext) => {
-  const user = await getValidatedInput<UnregisteredUser>(ctx.request.body, {
+  const user = getValidatedInput<UnregisteredUser>(ctx.request.body, {
     email: emailValidator,
     password: passwordValidator,
 
@@ -54,7 +90,6 @@ export const register = async (ctx: ParameterizedContext) => {
     birthday: Joi.date(),
     bio: Joi.string().max(5000),
     interests: Joi.array().items(Joi.string()),
-    hobbies: Joi.array().items(Joi.string()),
     city: Joi.string().max(256),
   });
 
@@ -68,15 +103,6 @@ export const register = async (ctx: ParameterizedContext) => {
 
   if (!newUser) {
     throw new ValidationError(UNEXPECTED_ERROR);
-  }
-
-  // upload pics if they exist
-  if (ctx.files?.length) {
-    const url = await uploadFile(ctx.request.file as File, ctx.user!.id);
-
-    newUser["picUrl"] = url;
-
-    await updateUser(newUser.id, { picUrl: url });
   }
 
   // TODO: disabled to be added at a later stage
@@ -97,6 +123,8 @@ export const register = async (ctx: ParameterizedContext) => {
   //     linkTitle: i18n.__("email.accountConfirm.alternativeLinkTitle"),
   //   },
   // );
+
+  ctx.login(user); // This triggers the session creation
 
   ctx.status = 201;
   ctx.body = newUser;
