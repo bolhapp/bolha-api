@@ -64,6 +64,13 @@
       "when": 1724089385326,
       "tag": "0008_mute_jack_power",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1724186865448,
+      "tag": "0009_ancient_stingray",
+      "breakpoints": true
     }
   ]
 }
