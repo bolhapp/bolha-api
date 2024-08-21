@@ -23,7 +23,7 @@ export default defineConfig({
   cache: false,
   plugins: [
     commonjs(), // Converts CommonJS modules to ES6
-    resolve(), // compiles node modules
+    resolve({ preferBuiltins: true }), // compiles node modules
     json(), // This plugin allows Rollup to import JSON files
     typescript(), // Compiles TypeScript
     sourcemaps(), // Enable source maps
@@ -46,4 +46,5 @@ export default defineConfig({
       ),
     ),
   ],
+  external: ["mock-aws-s3", "aws-sdk", "nock", "@babel/preset-typescript/package.json"],
 });
