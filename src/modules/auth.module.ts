@@ -1,6 +1,6 @@
 import Joi from "joi";
 import type { Next, ParameterizedContext } from "koa";
-import { compareSync } from "bcrypt";
+import { verify } from "argon2";
 import dayjs from "dayjs";
 
 import { USER_GENDER } from "@/db/schemas/users.schema";
@@ -61,7 +61,7 @@ export const login = async (ctx: ParameterizedContext, next: Next) => {
       ],
     );
 
-    if (!user || !compareSync(payload.password, user.password)) {
+    if (!user || !verify(payload.password, user.password)) {
       throw new ValidationError(INVALID_PARAMS);
     }
 

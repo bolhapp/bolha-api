@@ -1,4 +1,4 @@
-import { hashSync } from "bcrypt";
+import { hash } from "argon2";
 import { and, eq, sql } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 
@@ -6,8 +6,6 @@ import { db } from ".";
 import { users } from "./schemas/users.schema";
 import type { SelectUser } from "./schemas/users.schema";
 import type { User, UnregisteredUser, AccountConfirmationPayload, FullUser } from "@/types/user";
-
-const SALT = 10;
 
 export const getUser = async <T = SelectUser>(
   email: string,
@@ -40,7 +38,7 @@ export const createUser = async (
     .insert(users)
     .values({
       ...payload,
-      password: hashSync(payload.password as string, SALT),
+      password: await hash(payload.password as string),
       token,
       // todo: remove when we add account confirmation
       verified: true,
