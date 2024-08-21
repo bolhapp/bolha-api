@@ -3,7 +3,7 @@
   "version": "1.0",
   "scripts": {
     "start": "node dist/src/app.js",
-    "dev": "nodemon",
+    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/app.ts",
     "build": "tsc && tsc-alias",
     "lint": "eslint 'src/app.ts'",
     "db:ui": "yarn drizzle-kit studio",
@@ -69,7 +69,9 @@
     "eslint-plugin-prettier": "^5.2.1",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.10",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4"
   }
 }
