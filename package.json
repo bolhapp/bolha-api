@@ -1,11 +1,11 @@
 {
   "name": "lfg",
   "version": "1.0",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
-    "start": "ts-node src/app.ts",
+    "start": "node dist/bundle.js",
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/app.ts",
-    "build": "tsc",
+    "build": "rollup -c",
     "lint": "eslint 'src/**/*.{js,ts}'",
     "db:ui": "yarn drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
@@ -14,7 +14,7 @@
   "engines": {
     "node": ">= 22.5.1"
   },
-  "packageManager": "yarn@4.3.1",
+  "packageManager": "yarn@4.4.0",
   "dependencies": {
     "@getbrevo/brevo": "^2.2.0",
     "@koa/bodyparser": "^5.1.1",
@@ -44,6 +44,11 @@
     "sharp": "^0.33.5"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.7",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/bcrypt": "^5.0.2",
     "@types/i18n": "^0",
     "@types/joi": "^17.2.3",
@@ -67,7 +72,9 @@
     "eslint-plugin-prettier": "^5.2.1",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
+    "rollup": "^4.21.0",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4"
   }

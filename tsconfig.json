@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES6",
-    "module": "commonjs",
-    "moduleResolution": "Node10",
+    "module": "ES6",
     "strict": true,
     "preserveSymlinks": true,
     "esModuleInterop": true,
@@ -10,6 +9,9 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "declaration": true,
+    "rootDir": "./",
+    "sourceMap": true,
     "paths": {
       "@/*": ["src/*"]
     },
