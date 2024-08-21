@@ -3,8 +3,8 @@
   "version": "1.0",
   "type": "module",
   "scripts": {
-    "start": "node dist/bundle.js",
-    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/app.ts",
+    "start": "node dist/app.js",
+    "dev": "nodemon",
     "build": "rollup -c",
     "lint": "eslint 'src/**/*.{js,ts}'",
     "db:ui": "yarn drizzle-kit studio",
@@ -23,7 +23,6 @@
     "@koa/router": "^12.0.1",
     "bcrypt": "^5.1.1",
     "dayjs": "^1.11.12",
-    "dotenv": "^16.4.5",
     "drizzle-orm": "^0.32.2",
     "eslint-plugin-drizzle": "^0.2.3",
     "firebase": "^10.13.0",
@@ -66,6 +65,7 @@
     "@types/passport-jwt": "^4",
     "@typescript-eslint/eslint-plugin": "^8.0.1",
     "@typescript-eslint/parser": "^8.0.1",
+    "dotenv": "^16.4.5",
     "drizzle-kit": "^0.23.2",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^9.1.0",
@@ -73,9 +73,7 @@
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
     "rollup": "^4.21.0",
-    "ts-node": "^10.9.2",
-    "tsc-alias": "^1.8.10",
-    "tsconfig-paths": "^4.2.0",
+    "rollup-plugin-sourcemaps": "^0.6.3",
     "typescript": "^5.5.4"
   }
 }

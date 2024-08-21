@@ -1,11 +1,8 @@
-// import dotenv from "dotenv";
 import Koa from "koa";
 import bodyParser from "@koa/bodyparser";
 import helmet from "koa-helmet";
 import compress from "koa-compress";
 import cors from "@koa/cors";
-
-// dotenv.config();
 
 import "./db";
 
