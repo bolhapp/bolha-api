@@ -21,31 +21,6 @@ jobs:
       with:
         node-version: '22'
 
-    - name: Run install
-      run: corepack enable && yarn set version stable
-    
-    # - name: Build production bundle
-    #   uses: borales/actions-yarn@v4
-    #   with:
-    #     cmd: build # will run `yarn build:prod` command
-
-    - name: Run Linting
-      uses: borales/actions-yarn@v4
-      with:
-        cmd: lint 
-      
-    # - name: Build project
-    #   uses: borales/actions-yarn@v4 
-    #   with: 
-    #     cmd: lint
-
-    # - name: Deploy to server
-    #   env:
-    #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     SSH_HOST: ${{ secrets.SSH_HOST }}
-    #     SSH_USER: ${{ secrets.SSH_USER }}
-    #   run: |
-    #     echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
-    #     ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
-    #     scp -r dist/* $SSH_USER@$SSH_HOST:/path/to/deployment/directory
-    #     ssh $SSH_USER@$SSH_HOST 'pm2 reload all'
+    - name: Run install & linting 
+      run: corepack enable && yarn set version stable && yarn lint
+  
