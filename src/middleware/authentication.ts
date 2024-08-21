@@ -19,14 +19,14 @@ export default function (): Middleware {
       return await next();
     }
 
-    await passport.authenticate("jwt", { session: false }, (err, user) => {
+    await passport.authenticate("jwt", { session: false }, async (err, user) => {
       if (!user) {
         throw new ValidationError(UNAUTHENTICATED_ERROR);
       }
 
       ctx.user = user;
 
-      next();
+      await next();
     })(ctx, next);
   };
 }

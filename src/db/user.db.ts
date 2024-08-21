@@ -73,14 +73,13 @@ export const updateUser = async (email: string, payload: Partial<User>) => {
   const result = await db.update(users).set(payload).where(eq(users.email, email)).returning({
     id: users.id,
     email: users.email,
-    verified: users.verified,
     type: users.type,
-    token: users.token,
     name: users.name,
     bio: users.bio,
     gender: users.gender,
     birthday: users.birthday,
     city: users.city,
+    interests: users.interests,
   });
 
   return result[0];

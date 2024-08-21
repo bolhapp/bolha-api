@@ -26,8 +26,8 @@ app
 
   .use(passport.initialize())
   // custom middelware
-  .use(errorHandler())
   .use(authenticationHandler())
+  .use(errorHandler())
   // routes
   .use(router.allowedMethods())
   .use(router.routes());

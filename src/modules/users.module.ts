@@ -45,10 +45,6 @@ export const editUser = async (ctx: ParameterizedContext) => {
     throw new ValidationError(INVALID_PARAMS);
   }
 
-  const authedUser = getValidatedInput<{ email: string }>(ctx.params, {
-    email: emailValidator,
-  });
-
   const payload = getValidatedInput<Partial<User>>(ctx.request.body, {
     email: emailValidator.optional(),
 
@@ -64,7 +60,7 @@ export const editUser = async (ctx: ParameterizedContext) => {
     throw new ValidationError(INVALID_PARAMS);
   }
 
-  if (!(await userExists(authedUser.email))) {
+  if (!(await userExists(ctx.user!.email))) {
     throw new ValidationError(USER_NOT_FOUND);
   }
 
@@ -76,7 +72,7 @@ export const editUser = async (ctx: ParameterizedContext) => {
     }
   }
 
-  ctx.body = await updateUser(authedUser.email, payload);
+  ctx.body = await updateUser(ctx.user!.email, payload);
 };
 
 export const getActivities = async (ctx: ParameterizedContext) => {
