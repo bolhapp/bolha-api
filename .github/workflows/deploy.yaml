@@ -22,5 +22,5 @@ jobs:
         node-version: '22'
 
     - name: Run install & linting 
-      run: corepack enable && yarn set version stable && yarn lint
+      run: corepack enable && yarn set version stable && yarn install && yarn lint
   
