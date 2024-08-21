@@ -27,10 +27,14 @@ jobs:
         cmd: install # will run `yarn install` command
 
     - name: Run lint
-      run: yarn lint
+      uses: borales/actions-yarn@v4 
+      with: 
+        cmd: lint
 
     - name: Build project
-      run: yarn build
+      uses: borales/actions-yarn@v4 
+      with: 
+        cmd: lint
 
     # - name: Deploy to server
     #   env:
