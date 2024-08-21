@@ -4,6 +4,10 @@ import helmet from "koa-helmet";
 import compress from "koa-compress";
 import cors from "@koa/cors";
 
+import { config } from "dotenv";
+
+config();
+
 import "./db";
 
 import passport from "./modules/passport.module";

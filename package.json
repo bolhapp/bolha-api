@@ -2,9 +2,9 @@
   "name": "lfg",
   "version": "1.0",
   "scripts": {
-    "start": "node dist/app.js",
+    "start": "node dist/src/app.js",
     "dev": "nodemon",
-    "build": "rollup -c --bundleConfigAsCjs",
+    "build": "tsc && tsc-alias",
     "lint": "eslint 'src/**/*.{js,ts}'",
     "db:ui": "yarn drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
@@ -39,7 +39,8 @@
     "passport-jwt": "^4.0.1",
     "pino": "^9.3.2",
     "postgres": "^3.4.4",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "tsc": "^2.0.4"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.24.7",
@@ -73,6 +74,7 @@
     "prettier": "^3.3.3",
     "rollup": "^4.21.0",
     "rollup-plugin-sourcemaps": "^0.6.3",
+    "tsc-alias": "^1.8.10",
     "typescript": "^5.5.4"
   }
 }
