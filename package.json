@@ -44,11 +44,6 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.24.7",
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-replace": "^5.0.7",
-    "@rollup/plugin-typescript": "^11.1.6",
     "@types/i18n": "^0",
     "@types/joi": "^17.2.3",
     "@types/jsonwebtoken": "^9",
@@ -72,8 +67,6 @@
     "eslint-plugin-prettier": "^5.2.1",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
-    "rollup": "^4.21.0",
-    "rollup-plugin-sourcemaps": "^0.6.3",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.5.4"
   }
