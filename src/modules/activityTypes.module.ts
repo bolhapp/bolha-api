@@ -1,6 +1,6 @@
 import type { ParameterizedContext } from "koa";
 
-const INTERESTS = ["photography", "books", "travelling", "video games", "sports"];
+import { getActivityTypes } from "@/db/activityTypes.db";
 
 const getValidInt = (int?: string, fallback: number = 0): number => {
   try {
@@ -19,5 +19,5 @@ export const getAll = async (ctx: ParameterizedContext) => {
   const page = getValidInt(ctx.request?.query.page as string | undefined);
   const pageSize = getValidInt(ctx.request?.query.pageSize as string | undefined, 25);
 
-  ctx.body = INTERESTS.slice(page, page === 0 ? pageSize : page * pageSize);
+  ctx.body = getActivityTypes(page, pageSize);
 };

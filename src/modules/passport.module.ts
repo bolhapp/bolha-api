@@ -36,7 +36,7 @@ passport.use(
     },
     async function (jwt, done) {
       try {
-        const user = await getUser(jwt.email);
+        const user = await getUser(jwt.id);
 
         if (!user) {
           return done(UNAUTHENTICATED_ERROR, false);

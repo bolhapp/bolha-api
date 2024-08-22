@@ -1,7 +1,7 @@
 import Router from "@koa/router";
 
 import addAuthRoutes from "./auth.route";
-import addInterestsRoutes from "./interests.route";
+import addActivtyTypesRoutes from "./activityTypes.route";
 import addUsersRoutes from "./users.route";
 import addActivitiesRoutes from "./activities.route";
 
@@ -14,7 +14,7 @@ router
   .get("/api/v1/version", (ctx) => (ctx.body = { minVersion: 1, version: 1 }));
 
 addAuthRoutes(router);
-addInterestsRoutes(router);
+addActivtyTypesRoutes(router);
 addUsersRoutes(router);
 addActivitiesRoutes(router);
 

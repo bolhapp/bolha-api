@@ -1,10 +1,8 @@
-import Joi from "joi";
-import type { Next, ParameterizedContext } from "koa";
+import type { ParameterizedContext } from "koa";
 import { verify } from "argon2";
 import dayjs from "dayjs";
 
-import { USER_GENDER } from "@/db/schemas/users.schema";
-import { createUser, getUser, userExists, verifyUser } from "@/db/user.db";
+import { createUser, getUser, getUserForAuth, userExists, verifyUser } from "@/db/user.db";
 import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
 import { EMAIL_TAKEN, INVALID_TOKEN_PAYLOAD, NOT_VERIFIED } from "@/errors/auth.errors";
@@ -38,54 +36,33 @@ export const login = async (ctx: ParameterizedContext) => {
     },
   );
 
+  let user = null;
   try {
-    const user = await getUser(
-      payload.email,
-      [],
-      [
-        "id",
-        "name",
-        "gender",
-        "birthday",
-        "bio",
-        "interests",
-        "city",
-        "picUrl",
-        "password",
-        "verified",
-      ],
-    );
-
-    if (!user || !verify(payload.password, user.password)) {
-      throw new ValidationError(INVALID_PARAMS);
-    }
-
-    if (!user.verified) {
-      throw new ValidationError(NOT_VERIFIED);
-    }
-
-    // @ts-expect-error - will complain that password must be optional to be able to delete
-    delete user.password;
-    // @ts-expect-error - will complain that verified must be optional to be able to delete
-    delete user.verified;
-
-    ctx.body = { user, token: signToken(user.email) };
-  } catch (err) {
+    user = await getUserForAuth(payload.email);
+  } catch (_) {
     throw new ValidationError(INVALID_PARAMS);
   }
+
+  if (!user || !(await verify(user.password, payload.password))) {
+    throw new ValidationError(INVALID_PARAMS);
+  }
+
+  if (!user.verified) {
+    throw new ValidationError(NOT_VERIFIED);
+  }
+
+  // @ts-expect-error - will complain that password must be optional to be able to delete
+  delete user.password;
+  // @ts-expect-error - will complain that verified must be optional to be able to delete
+  delete user.verified;
+
+  ctx.body = { user, token: signToken(user.id) };
 };
 
 export const register = async (ctx: ParameterizedContext) => {
   const user = getValidatedInput<UnregisteredUser>(ctx.request.body, {
     email: emailValidator,
     password: passwordValidator,
-
-    name: Joi.string().max(512),
-    gender: Joi.string().valid(...USER_GENDER),
-    birthday: Joi.date(),
-    bio: Joi.string().max(5000),
-    interests: Joi.array().items(Joi.string()),
-    city: Joi.string().max(256),
   });
 
   if (await userExists(user.email)) {
@@ -120,7 +97,7 @@ export const register = async (ctx: ParameterizedContext) => {
   // );
 
   ctx.status = 201;
-  ctx.body = { user: newUser, token: signToken(user.email) };
+  ctx.body = { user: newUser, token: signToken(newUser.id) };
 };
 
 export const registerConfirm = async (ctx: ParameterizedContext) => {

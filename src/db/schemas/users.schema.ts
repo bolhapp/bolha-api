@@ -14,6 +14,7 @@ import type { UserType, UserGender, UserAvailbility } from "@/types/user";
 import { relations } from "drizzle-orm";
 import { userActivities } from "./userActivities.schema";
 import { activityRequests } from "./activities.schema";
+import { activityTypes } from "./activityTypes.schema";
 
 export const USER_TYPES: Readonly<[UserType, ...UserType[]]> = ["user", "admin"];
 
@@ -36,11 +37,10 @@ export const users = pgTable(
     type: text("type").$type<UserType>().default("user"),
 
     name: text("name"),
-    gender: varchar("gender", { length: 15 }).$type<UserGender>().default("prefer_not_say"),
+    gender: varchar("gender", { length: 15 }).$type<UserGender>(),
     birthday: date("birthday"),
     token: varchar("token", { length: 128 }),
     bio: text("bio"),
-    interests: text("locations").array().$type<string[]>(),
     city: varchar("city", { length: 256 }),
     picUrl: text("pic_url"),
     picThumbnailUrl: text("pic_thumbnail_url"),
@@ -49,13 +49,13 @@ export const users = pgTable(
   (users) => ({
     idIdx: uniqueIndex("user_id_idx").on(users.id),
     emailIdx: uniqueIndex("user_email_idx").on(users.email),
-    interestsIdx: index("user_interests_idx").on(users.interests),
   }),
 );
 
 export const userRelations = relations(users, ({ many }) => ({
   activities: many(userActivities),
   activityRequestId: many(activityRequests),
+  interests: many(activityTypes),
 }));
 
 export type InsertUser = typeof users.$inferInsert;

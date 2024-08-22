@@ -5,7 +5,28 @@ import type { PgColumn } from "drizzle-orm/pg-core";
 import { db } from ".";
 import { users } from "./schemas/users.schema";
 import type { SelectUser } from "./schemas/users.schema";
-import type { User, UnregisteredUser, AccountConfirmationPayload, FullUser } from "@/types/user";
+import type { User, UnregisteredUser, AccountConfirmationPayload } from "@/types/user";
+
+export const getUserForAuth = async (email: string) => {
+  const result = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      gender: users.gender,
+      birthday: users.birthday,
+      bio: users.bio,
+      city: users.city,
+      picUrl: users.picUrl,
+      password: users.password,
+      verified: users.verified,
+    })
+    .from(users)
+    .where(and(eq(users.email, email)))
+    .limit(1);
+
+  return result.length ? result[0] : null;
+};
 
 export const getUser = async <T = SelectUser>(
   id: string,
@@ -79,7 +100,6 @@ export const updateUser = async (email: string, payload: Partial<User>) => {
     gender: users.gender,
     birthday: users.birthday,
     city: users.city,
-    interests: users.interests,
     picUrl: users.picUrl,
   });
 
