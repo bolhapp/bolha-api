@@ -5,78 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1723214557641,
-      "tag": "0000_cheerful_roulette",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1723987270015,
-      "tag": "0001_talented_riptide",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1724086553825,
-      "tag": "0002_lazy_earthquake",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1724086579211,
-      "tag": "0003_powerful_aqueduct",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1724088564028,
-      "tag": "0004_empty_galactus",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1724089089775,
-      "tag": "0005_flashy_tyger_tiger",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1724089197400,
-      "tag": "0006_sharp_molecule_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1724089294850,
-      "tag": "0007_foamy_pete_wisdom",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1724089385326,
-      "tag": "0008_mute_jack_power",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1724186865448,
-      "tag": "0009_ancient_stingray",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1724356094596,
-      "tag": "0010_wide_bug",
+      "when": 1724362359716,
+      "tag": "0000_legal_blue_blade",
       "breakpoints": true
     }
   ]
