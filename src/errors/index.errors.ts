@@ -17,3 +17,9 @@ export const UNSUPPORTED_FORMAT: ValidationErrorPayload = {
   errorCode: 1003,
   statusMessage: "unsupported_format",
 } as const;
+
+export const INVALID_PARAMS: ValidationErrorPayload = {
+  statusCode: 422,
+  statusMessage: "invalid_params",
+  errorCode: 1003,
+} as const;

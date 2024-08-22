@@ -4,15 +4,11 @@ import { verify } from "argon2";
 import dayjs from "dayjs";
 
 import { USER_GENDER } from "@/db/schemas/users.schema";
-import { createUser, getUser, updateUser, userExists, verifyUser } from "@/db/user.db";
+import { createUser, getUser, userExists, verifyUser } from "@/db/user.db";
 import { getValidatedInput, sanitizeInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
-import {
-  EMAIL_TAKEN,
-  INVALID_TOKEN_PAYLOAD,
-  INVALID_PARAMS,
-  NOT_VERIFIED,
-} from "@/errors/auth.errors";
+import { EMAIL_TAKEN, INVALID_TOKEN_PAYLOAD, NOT_VERIFIED } from "@/errors/auth.errors";
+import { INVALID_PARAMS } from "@/errors/index.errors";
 import type { AccountConfirmationPayload, UnregisteredUser } from "@/types/user";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
 import { genToken } from "@/utils";
@@ -20,14 +16,13 @@ import { emailValidator, passwordValidator, tokenValidator } from "@/utils/valid
 import { sendEmail } from "@/services/email";
 import i18n from "@/i18n";
 import { signToken } from "@/utils/token";
-import passport from "./passport.module";
 
 interface LoginPayload {
   email: string;
   password: string;
 }
 
-export const login = async (ctx: ParameterizedContext, next: Next) => {
+export const login = async (ctx: ParameterizedContext) => {
   if (!ctx.request?.body) {
     throw new ValidationError(INVALID_PARAMS);
   }

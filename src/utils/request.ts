@@ -1,8 +1,7 @@
 import Joi from "joi";
 
 import { ValidationError } from "@/exceptions";
-import { INVALID_PARAMS } from "@/errors/auth.errors";
-import { NO_PARAMS } from "@/errors/index.errors";
+import { INVALID_PARAMS, NO_PARAMS } from "@/errors/index.errors";
 
 export const getValidatedInput = <T extends Record<string, any>>(
   payload: Record<string, any>,
