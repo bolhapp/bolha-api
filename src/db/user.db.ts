@@ -8,13 +8,13 @@ import type { SelectUser } from "./schemas/users.schema";
 import type { User, UnregisteredUser, AccountConfirmationPayload, FullUser } from "@/types/user";
 
 export const getUser = async <T = SelectUser>(
-  email: string,
+  id: string,
   filter: Array<Array<string | any>> = [],
   fields: string[] = [],
 ): Promise<T | undefined> => {
   const result = await db
     .select({
-      email: users.email,
+      id: users.id,
       ...fields.reduce<Record<string, PgColumn>>((result, field) => {
         // @ts-expect-error not really sure how to type this
         result[field] = users[field];
@@ -24,7 +24,7 @@ export const getUser = async <T = SelectUser>(
     })
     .from(users)
     // @ts-expect-error same issue as above
-    .where(and(eq(users.email, email), ...filter.map(([key, value]) => eq(users[key], value))))
+    .where(and(eq(users.id, id), ...filter.map(([key, value]) => eq(users[key], value))))
     .limit(1);
 
   return result.length ? (result[0] as T) : undefined;
@@ -80,6 +80,7 @@ export const updateUser = async (email: string, payload: Partial<User>) => {
     birthday: users.birthday,
     city: users.city,
     interests: users.interests,
+    picUrl: users.picUrl,
   });
 
   return result[0];

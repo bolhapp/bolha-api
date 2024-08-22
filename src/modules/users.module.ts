@@ -1,36 +1,26 @@
 import type { ParameterizedContext } from "koa";
 import Joi from "joi";
 
-import { getUser, userExists, updateUser } from "@/db/user.db";
+import { getUser, updateUser } from "@/db/user.db";
 import { emailValidator } from "@/utils/validators";
 import { getValidatedInput } from "@/utils/request";
 import type { User } from "@/types/user";
 import { USER_GENDER } from "@/db/schemas/users.schema";
 import { ValidationError } from "@/exceptions";
 import { USER_NOT_FOUND } from "@/errors/user.errors";
-import { EMAIL_TAKEN, INVALID_PARAMS } from "@/errors/auth.errors";
+import { EMAIL_TAKEN } from "@/errors/auth.errors";
+import { INVALID_PARAMS } from "@/errors/index.errors";
 import { getUserActivities } from "@/db/activity.db";
 
 export const userDetails = async (ctx: ParameterizedContext) => {
-  const { email } = getValidatedInput<{ email: string }>(ctx.params, {
+  const { id } = getValidatedInput<{ id: string }>(ctx.params, {
     email: emailValidator,
   });
 
   const user = await getUser(
-    email,
+    id,
     [],
-    [
-      "id",
-      "name",
-      "gender",
-      "birthday",
-      "token",
-      "bio",
-      "interests",
-      "city",
-      "picUrl",
-      "picThumbnailUrl",
-    ],
+    ["id", "name", "gender", "birthday", "bio", "interests", "city", "picUrl"],
   );
 
   if (!user) {
@@ -58,10 +48,6 @@ export const editUser = async (ctx: ParameterizedContext) => {
 
   if (!Object.keys(payload).length) {
     throw new ValidationError(INVALID_PARAMS);
-  }
-
-  if (!(await userExists(ctx.user!.email))) {
-    throw new ValidationError(USER_NOT_FOUND);
   }
 
   if (payload.email) {
