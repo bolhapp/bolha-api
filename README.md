@@ -18,7 +18,7 @@ to start the api locally, you'll need a postgres connection, create a .env file 
 
 run a postgres container
 
-`docker run --name lfg -e POSTGRES_PASSWORD=mysecretpassword -v data:/var/lib/postgresql/data -p 5432:5432 -d postgres`
+`docker run --name lfg -e POSTGRES_PASSWORD=mysecretpassword -v lfg:/var/lib/postgresql/data -p 5432:5432 -d postgres`
 
 connect to container
 

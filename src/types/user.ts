@@ -10,7 +10,6 @@ export interface UserDetails {
   gender?: UserGender;
   birthday?: string;
   city?: string;
-  interests?: string[];
 }
 
 // includes BE only fields such as password and verified
@@ -28,7 +27,9 @@ export interface FullUser extends UserDetails {
 
 export type User = Omit<FullUser, "password" | "verified" | "createdAt">;
 
-export type UnregisteredUser = Omit<FullUser, "id" | "verified" | "createdAt">;
+export interface UnregisteredUser extends Omit<FullUser, "id" | "verified" | "createdAt"> {
+  interests?: string[];
+}
 
 export interface TokenUser {
   email: string;

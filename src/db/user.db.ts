@@ -3,7 +3,7 @@ import { and, eq, sql } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 
 import { db } from ".";
-import { users } from "./schemas/users.schema";
+import { userInterests, users } from "./schemas/users.schema";
 import type { SelectUser } from "./schemas/users.schema";
 import type { User, UnregisteredUser, AccountConfirmationPayload } from "@/types/user";
 
@@ -55,6 +55,10 @@ export const createUser = async (
   payload: UnregisteredUser,
   token: string,
 ): Promise<User | null> => {
+  const interests = payload.interests ? payload.interests : [];
+
+  delete payload.interests;
+
   const result = await db
     .insert(users)
     .values({
@@ -66,7 +70,17 @@ export const createUser = async (
     })
     .returning({ id: users.id, email: users.email });
 
-  return result[0] as User;
+  const newUser = result[0] as User;
+
+  if (interests.length) {
+    await db.transaction(async (tx) => {
+      await tx
+        .insert(userInterests)
+        .values(interests.map((i) => ({ userId: newUser.id, activityTypeId: i })));
+    });
+  }
+
+  return newUser;
 };
 
 export const verifyUser = async ({

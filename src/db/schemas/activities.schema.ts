@@ -28,7 +28,7 @@ export const ACTIVITY_DIFICULTY: Readonly<[ActivityDifficulty, ...ActivityDiffic
 export const activities = pgTable(
   "activities",
   {
-    id: uuid("id").unique().notNull().defaultRandom(),
+    id: uuid("id").primaryKey().unique().notNull().defaultRandom(),
     name: varchar("name", { length: 256 }).notNull(),
     description: text("description").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
@@ -44,36 +44,67 @@ export const activities = pgTable(
     pics: varchar("pics", { length: 256 }).array(),
   },
   (activities) => ({
-    idIdx: primaryKey({ columns: [activities.id] }),
     onlineIdx: uniqueIndex("online_email_idx").on(activities.online),
     difficultyIdx: index("activity_difficulty_idx").on(activities.difficulty),
   }),
 );
 
-export const activityRequests = pgTable(
-  "activity_requests",
+export const activityRequests = pgTable("activity_requests", {
+  id: uuid("id").unique().primaryKey().notNull().defaultRandom(),
+  activityId: uuid("activity_id")
+    .notNull()
+    .references(() => activities.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  state: varchar("state", { length: 8 }).$type<ActivityRequestState>().default("pending"),
+  rejectedReason: text("rejected_reason"),
+});
+
+export const activityCategories = pgTable(
+  "activity_categories",
   {
-    id: uuid("id").primaryKey().unique().notNull().defaultRandom(),
-    activityId: uuid("activity_id").notNull(),
-    userId: uuid("user_id").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    state: varchar("state", { length: 8 }).$type<ActivityRequestState>().default("pending"),
-    rejectedReason: text("rejected_reason"),
+    activityTypeId: uuid("activity_type_id")
+      .notNull()
+      .references(() => activityTypes.id),
+    activityId: uuid("activity_id")
+      .notNull()
+      .references(() => activities.id),
   },
-  (acitivityRequest) => ({
-    idIdx: primaryKey({ columns: [acitivityRequest.userId, acitivityRequest.activityId] }),
+  (activityCategories) => ({
+    idIdx: primaryKey({
+      columns: [activityCategories.activityId, activityCategories.activityTypeId],
+    }),
   }),
 );
 
-export const activityRelations = relations(activities, ({ many }) => ({
-  createdUserId: many(userActivities),
-  requestId: many(activityRequests),
-  activityTypes: many(activityTypes),
+export const activityRequestsRelations = relations(activityRequests, ({ one }) => ({
+  users: one(users, {
+    fields: [activityRequests.userId],
+    references: [users.id],
+  }),
+  activities: one(activities, {
+    fields: [activityRequests.activityId],
+    references: [activities.id],
+  }),
 }));
 
-export const activityRequestsRelations = relations(activityRequests, ({ many }) => ({
-  activityId: many(activities),
-  requestedUserId: many(users),
+export const activityCategoriesRelations = relations(activityCategories, ({ one }) => ({
+  activityTypes: one(activityTypes, {
+    fields: [activityCategories.activityTypeId],
+    references: [activityTypes.id],
+  }),
+  activities: one(activities, {
+    fields: [activityCategories.activityId],
+    references: [activities.id],
+  }),
+}));
+
+export const activityRelations = relations(activities, ({ many }) => ({
+  userActivities: many(userActivities),
+  activityRequests: many(activityRequests),
+  activityCategories: many(activityCategories),
 }));
 
 export type InsertActivity = typeof activities.$inferInsert;

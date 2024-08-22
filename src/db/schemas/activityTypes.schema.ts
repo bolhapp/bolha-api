@@ -1,22 +1,16 @@
-import { pgTable, uuid, uniqueIndex, varchar } from "drizzle-orm/pg-core";
+import { pgTable, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-import { users } from "./users.schema";
-import { activities } from "./activities.schema";
+import { userInterests } from "./users.schema";
+import { activityCategories } from "./activities.schema";
 
-export const activityTypes = pgTable(
-  "activityTypes",
-  {
-    id: uuid("id").unique().notNull().defaultRandom(),
-  },
-  (activityTypes) => ({
-    idIdx: uniqueIndex("activity_types_idx").on(activityTypes.id),
-  }),
-);
+export const activityTypes = pgTable("activity_types", {
+  id: uuid("id").unique().notNull().defaultRandom(),
+});
 
 export const activityTypesRelations = relations(activityTypes, ({ many }) => ({
-  userIntersts: many(users),
-  activityTypes: many(activities),
+  userInterests: many(userInterests),
+  activityCategories: many(activityCategories),
 }));
 
 export type InsertActivityType = typeof activityTypes.$inferInsert;

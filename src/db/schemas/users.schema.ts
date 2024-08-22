@@ -1,16 +1,16 @@
 import {
+  primaryKey,
   pgTable,
   uuid,
   text,
   timestamp,
   uniqueIndex,
-  index,
   boolean,
   varchar,
 } from "drizzle-orm/pg-core";
 import { date } from "drizzle-orm/pg-core";
 
-import type { UserType, UserGender, UserAvailbility } from "@/types/user";
+import type { UserType, UserGender } from "@/types/user";
 import { relations } from "drizzle-orm";
 import { userActivities } from "./userActivities.schema";
 import { activityRequests } from "./activities.schema";
@@ -52,10 +52,36 @@ export const users = pgTable(
   }),
 );
 
+export const userInterests = pgTable(
+  "user_interests",
+  {
+    activityTypeId: uuid("activity_type_id")
+      .notNull()
+      .references(() => activityTypes.id),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+  },
+  (userInterests) => ({
+    idIdx: primaryKey({ columns: [userInterests.userId, userInterests.activityTypeId] }),
+  }),
+);
+
 export const userRelations = relations(users, ({ many }) => ({
-  activities: many(userActivities),
-  activityRequestId: many(activityRequests),
-  interests: many(activityTypes),
+  userActivities: many(userActivities),
+  activityRequests: many(activityRequests),
+  userInterests: many(userInterests),
+}));
+
+export const userInterestsRelations = relations(userInterests, ({ one }) => ({
+  activityTypes: one(activityTypes, {
+    fields: [userInterests.activityTypeId],
+    references: [activityTypes.id],
+  }),
+  users: one(users, {
+    fields: [userInterests.userId],
+    references: [users.id],
+  }),
 }));
 
 export type InsertUser = typeof users.$inferInsert;

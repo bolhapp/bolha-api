@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from ".";
-import { activities, activityRequests } from "./schemas/activities.schema";
+import { activities, activityRequests, activityCategories } from "./schemas/activities.schema";
 import { userActivities } from "./schemas/userActivities.schema";
 import type { Activity, BaseActivity } from "@/types/activity";
 
@@ -22,7 +22,15 @@ export const createActivity = async (userId: string, payload: BaseActivity): Pro
 
   const activity = result[0] as Activity;
 
-  await db.insert(userActivities).values({ userId, activityId: activity.id });
+  await db.transaction(async (tx) => {
+    await tx.insert(userActivities).values({ userId, activityId: activity.id });
+
+    if (payload.activityTypes.length) {
+      await tx
+        .insert(activityCategories)
+        .values(payload.activityTypes.map((i) => ({ activityId: activity.id, activityTypeId: i })));
+    }
+  });
 
   return activity;
 };
