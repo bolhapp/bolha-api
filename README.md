@@ -27,3 +27,7 @@ connect to container
 create the database
 
 `docker exec -it lfg psql -U postgres -c "CREATE DATABASE lfg;"`
+
+## Running scripts
+
+To run scripts you need to use `ts-node` and register the pathings. You can either do it using `yarn script <script path> ` or manbually type `ts-node -r tsconfig-paths/register <script path>`
