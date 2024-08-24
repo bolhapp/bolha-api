@@ -1,4 +1,5 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
+
 import { db } from ".";
 import { activities, activityRequests, activityCategories } from "./schemas/activities.schema";
 import { userActivities } from "./schemas/userActivities.schema";
@@ -12,6 +13,7 @@ export const createActivity = async (userId: string, payload: BaseActivity): Pro
     createdAt: activities.createdAt,
     online: activities.online,
     address: activities.address,
+    numParticipants: activities.numParticipants,
     maxParticipants: activities.maxParticipants,
     difficulty: activities.difficulty,
     date: activities.date,
@@ -49,6 +51,7 @@ export const updateActivity = async (
       createdAt: activities.createdAt,
       online: activities.online,
       address: activities.address,
+      numParticipants: activities.numParticipants,
       maxParticipants: activities.maxParticipants,
       difficulty: activities.difficulty,
       date: activities.date,
@@ -70,6 +73,7 @@ export const getUserActivities = async (userId: string) => {
       createdAt: activities.createdAt,
       online: activities.online,
       address: activities.address,
+      numParticipants: activities.numParticipants,
       maxParticipants: activities.maxParticipants,
       difficulty: activities.difficulty,
       date: activities.date,
@@ -111,7 +115,10 @@ export const updateActivityRequest = async (
     }
 
     if (status === "accepted") {
-      await tx.update(userActivities).set({ userId: result[0].userId, activityId, host: false });
+      await Promise.all([
+        tx.update(userActivities).set({ userId: result[0].userId, activityId, host: false }),
+        tx.update(activities).set({ numParticipants: sql`${activities.numParticipants} + 1` }),
+      ]);
     }
   });
 

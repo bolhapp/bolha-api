@@ -14,6 +14,7 @@ export interface BaseActivity {
   online: boolean;
   address: string;
   activityTypes: string[];
+  numParticipants: number;
   maxParticipants: number;
   difficulty: number;
   date: Date;

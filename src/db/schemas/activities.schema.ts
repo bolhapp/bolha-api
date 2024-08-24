@@ -27,6 +27,7 @@ export const activities = pgTable(
     online: boolean("online").notNull(),
     address: varchar("address", { length: 256 }).notNull(),
     participants: varchar("participants", { length: 256 }).array(),
+    numParticipants: integer("num_participants").default(0),
     maxParticipants: integer("max_participants").notNull(),
     difficulty: integer("difficulty").notNull(),
     date: timestamp("date", { withTimezone: true }).notNull(),
