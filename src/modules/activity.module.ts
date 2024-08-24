@@ -88,9 +88,9 @@ export const reply = async (ctx: ParameterizedContext) => {
     },
   );
 
-  const updatedRequest = await updateActivityRequest(request.id, request.status, request.reason);
+  const updateSuccessful = await updateActivityRequest(request.id, request.status, request.reason);
 
-  if (!updatedRequest) {
+  if (!updateSuccessful) {
     throw new ValidationError(UNEXPECTED_ERROR);
   }
 

@@ -22,7 +22,7 @@ export const createActivity = async (userId: string, payload: BaseActivity): Pro
   const activity = result[0] as Activity;
 
   await db.transaction(async (tx) => {
-    await tx.insert(userActivities).values({ userId, activityId: activity.id });
+    await tx.insert(userActivities).values({ userId, activityId: activity.id, host: true });
 
     if (payload.activityTypes.length) {
       await tx
@@ -98,10 +98,22 @@ export const updateActivityRequest = async (
   status: Partial<ActivityRequestState>,
   reason?: string,
 ) => {
-  const result = await db
-    .update(activityRequests)
-    .set({ state: status, rejectedReason: reason })
-    .where(eq(activityRequests.activityId, activityId));
+  let success = false;
+  await db.transaction(async (tx) => {
+    const result = await tx
+      .update(activityRequests)
+      .set({ state: status, rejectedReason: reason })
+      .where(eq(activityRequests.activityId, activityId))
+      .returning({ userId: activityRequests.userId });
 
-  return (result.count || 0) > 0;
+    if (result[0]) {
+      success = true;
+    }
+
+    if (status === "accepted") {
+      await tx.update(userActivities).set({ userId: result[0].userId, activityId, host: false });
+    }
+  });
+
+  return success;
 };

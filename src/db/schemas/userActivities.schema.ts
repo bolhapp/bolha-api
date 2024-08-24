@@ -1,4 +1,4 @@
-import { pgTable, uuid, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, uuid, primaryKey, boolean } from "drizzle-orm/pg-core";
 
 import { users } from "./users.schema";
 import { activities } from "./activities.schema";
@@ -13,6 +13,7 @@ export const userActivities = pgTable(
     activityId: uuid("activity_id")
       .notNull()
       .references(() => activities.id),
+    host: boolean("host").notNull(),
   },
   (userActivities) => ({
     idIdx: primaryKey({ columns: [userActivities.userId, userActivities.activityId] }),
