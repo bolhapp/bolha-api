@@ -5,5 +5,6 @@ export const signToken = (id: string) => {
     audience: ["lfgapp"],
     subject: "lfgappaut",
     issuer: "lfgapp",
+    expiresIn: "30 days",
   });
 };
