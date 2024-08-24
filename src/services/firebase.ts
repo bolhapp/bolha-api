@@ -6,6 +6,7 @@ import sharp from "sharp";
 import { ValidationError } from "@/exceptions";
 import { UNAUTHORIZED_ERROR } from "@/errors/auth.errors";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
+import { unlinkSync } from "fs";
 
 const app = initializeApp({
   apiKey: process.env.FIREBASE_API_KEY,
@@ -26,6 +27,9 @@ export const uploadFile = async (file: File, id: string) => {
       ref(getStorage(app), `images/${id}/${file.filename}.webp`),
       await result.toBuffer(),
     );
+
+    // remove local file
+    unlinkSync(file.path);
 
     return await getDownloadURL(snapshot.ref);
   } catch (error: any) {
