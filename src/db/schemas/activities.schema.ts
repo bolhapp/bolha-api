@@ -11,19 +11,11 @@ import {
   primaryKey,
 } from "drizzle-orm/pg-core";
 
-import type { ActivityDifficulty, ActivityRequestState } from "@/types/activity";
+import type { ActivityRequestState } from "@/types/activity";
 import { relations } from "drizzle-orm";
 import { userActivities } from "./userActivities.schema";
 import { users } from "./users.schema";
 import { activityTypes } from "./activityTypes.schema";
-
-export const ACTIVITY_DIFICULTY: Readonly<[ActivityDifficulty, ...ActivityDifficulty[]]> = [
-  "beginner",
-  "intermediate",
-  "advanced",
-  "expert",
-  "professional",
-];
 
 export const activities = pgTable(
   "activities",

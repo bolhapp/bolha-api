@@ -1,9 +1,11 @@
-export type ActivityDifficulty =
-  | "beginner"
-  | "intermediate"
-  | "advanced"
-  | "expert"
-  | "professional";
+export enum ActivityDifficulty {
+  first_time,
+  beginner,
+  intermediate,
+  advanced,
+  professional,
+  expert,
+}
 
 export interface BaseActivity {
   name: string;

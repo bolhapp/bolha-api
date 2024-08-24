@@ -5,7 +5,6 @@ import type { ParameterizedContext } from "koa";
 import { getValidatedInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
-import { ACTIVITY_DIFICULTY } from "@/db/schemas/activities.schema";
 import { createActivity, createActivityRequest, updateActivity } from "@/db/activity.db";
 import type { BaseActivity } from "@/types/activity";
 import { uploadFile } from "@/services/firebase";
@@ -24,14 +23,12 @@ export const create = async (ctx: ParameterizedContext) => {
       .custom((value, helper) => {
         try {
           return value.split(",").map((i: string) => i.trim());
-        } catch (err) {
+        } catch (_) {
           return helper.error("any.invalid");
         }
       })
       .required(),
-    difficulty: Joi.string()
-      .valid(...ACTIVITY_DIFICULTY)
-      .required(),
+    difficulty: Joi.number().max(5).min(0).required(),
     maxParticipants: Joi.number().required(),
     date: Joi.date().iso().min("now").required(),
     restrictions: Joi.string(),
