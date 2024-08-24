@@ -1,1 +1,0 @@
-ALTER TABLE "user_interests" ADD COLUMN "skill_level" integer DEFAULT 0;

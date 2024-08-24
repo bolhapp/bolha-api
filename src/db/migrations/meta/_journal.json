@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1724362359716,
-      "tag": "0000_legal_blue_blade",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1724511546709,
-      "tag": "0001_misty_sasquatch",
+      "when": 1724513829980,
+      "tag": "0000_true_frank_castle",
       "breakpoints": true
     }
   ]

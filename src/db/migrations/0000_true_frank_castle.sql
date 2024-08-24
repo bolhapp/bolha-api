@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS "activities" (
 	"address" varchar(256) NOT NULL,
 	"participants" varchar(256)[],
 	"max_participants" integer NOT NULL,
-	"difficulty" varchar(15) NOT NULL,
+	"difficulty" integer NOT NULL,
 	"date" timestamp with time zone NOT NULL,
 	"restrictions" text,
 	"extraDetails" text,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS "activities" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "activity_categories" (
-	"activity_type_id" uuid NOT NULL,
+	"activity_type_id" varchar NOT NULL,
 	"activity_id" uuid NOT NULL,
 	CONSTRAINT "activity_categories_activity_id_activity_type_id_pk" PRIMARY KEY("activity_id","activity_type_id")
 );
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS "activity_requests" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "activity_types" (
-	"id" uuid DEFAULT gen_random_uuid() NOT NULL,
+	"id" varchar NOT NULL,
 	CONSTRAINT "activity_types_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
@@ -44,8 +44,9 @@ CREATE TABLE IF NOT EXISTS "user_activities" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_interests" (
-	"activity_type_id" uuid NOT NULL,
+	"activity_type_id" varchar NOT NULL,
 	"user_id" uuid NOT NULL,
+	"skill_level" integer DEFAULT 0,
 	CONSTRAINT "user_interests_user_id_activity_type_id_pk" PRIMARY KEY("user_id","activity_type_id")
 );
 --> statement-breakpoint

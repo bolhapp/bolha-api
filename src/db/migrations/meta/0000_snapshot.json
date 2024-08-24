@@ -1,5 +1,5 @@
 {
-  "id": "70e898de-d27a-4f2a-924b-c035b822bc51",
+  "id": "25b09cc0-8ea7-498b-a905-59bed19321b8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -66,7 +66,7 @@
         },
         "difficulty": {
           "name": "difficulty",
-          "type": "varchar(15)",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -145,7 +145,7 @@
       "columns": {
         "activity_type_id": {
           "name": "activity_type_id",
-          "type": "uuid",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -286,10 +286,9 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "varchar",
           "primaryKey": false,
-          "notNull": true,
-          "default": "gen_random_uuid()"
+          "notNull": true
         }
       },
       "indexes": {},
@@ -368,7 +367,7 @@
       "columns": {
         "activity_type_id": {
           "name": "activity_type_id",
-          "type": "uuid",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -377,6 +376,13 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "skill_level": {
+          "name": "skill_level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
         }
       },
       "indexes": {},
