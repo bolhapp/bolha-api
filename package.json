@@ -6,6 +6,7 @@
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/app.ts",
     "build": "tsc && tsc-alias",
     "lint": "eslint 'src/app.ts'",
+    "script": "ts-node -r tsconfig-paths/register ",
     "db:ui": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "yarn db:generate && drizzle-kit migrate"
