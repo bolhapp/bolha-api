@@ -7,14 +7,16 @@ import {
   uniqueIndex,
   boolean,
   varchar,
+  integer,
 } from "drizzle-orm/pg-core";
 import { date } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 import type { UserType, UserGender } from "@/types/user";
-import { relations } from "drizzle-orm";
 import { userActivities } from "./userActivities.schema";
 import { activityRequests } from "./activities.schema";
 import { activityTypes } from "./activityTypes.schema";
+import { ActivityDifficulty } from "@/types/activity";
 
 export const USER_TYPES: Readonly<[UserType, ...UserType[]]> = ["user", "admin"];
 
@@ -61,6 +63,9 @@ export const userInterests = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id),
+    skillLevel: integer("skill_level")
+      .$type<ActivityDifficulty>()
+      .default(ActivityDifficulty.first_time),
   },
   (userInterests) => ({
     idIdx: primaryKey({ columns: [userInterests.userId, userInterests.activityTypeId] }),
