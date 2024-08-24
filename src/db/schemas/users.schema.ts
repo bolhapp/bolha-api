@@ -59,10 +59,10 @@ export const userInterests = pgTable(
   {
     activityTypeId: varchar("activity_type_id")
       .notNull()
-      .references(() => activityTypes.id),
+      .references(() => activityTypes.id, { onDelete: "no action" }),
     userId: uuid("user_id")
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "no action" }),
     skillLevel: integer("skill_level")
       .$type<ActivityDifficulty>()
       .default(ActivityDifficulty.first_time),

@@ -8,6 +8,20 @@
       "when": 1724513829980,
       "tag": "0000_true_frank_castle",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1724516062275,
+      "tag": "0001_numerous_morlocks",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1724516626328,
+      "tag": "0002_narrow_psylocke",
+      "breakpoints": true
     }
   ]
 }

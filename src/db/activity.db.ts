@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from ".";
 import { activities, activityRequests, activityCategories } from "./schemas/activities.schema";
 import { userActivities } from "./schemas/userActivities.schema";
-import type { Activity, BaseActivity } from "@/types/activity";
+import type { Activity, ActivityRequestState, BaseActivity } from "@/types/activity";
 
 export const createActivity = async (userId: string, payload: BaseActivity): Promise<Activity> => {
   const result = await db.insert(activities).values(payload).returning({
@@ -12,7 +12,6 @@ export const createActivity = async (userId: string, payload: BaseActivity): Pro
     createdAt: activities.createdAt,
     online: activities.online,
     address: activities.address,
-    participants: activities.participants,
     maxParticipants: activities.maxParticipants,
     difficulty: activities.difficulty,
     date: activities.date,
@@ -42,6 +41,7 @@ export const updateActivity = async (
   const result = await db
     .update(activities)
     .set({ ...payload, updatedAt: new Date() })
+    .where(eq(activities.id, activityId))
     .returning({
       id: activities.id,
       name: activities.name,
@@ -49,7 +49,6 @@ export const updateActivity = async (
       createdAt: activities.createdAt,
       online: activities.online,
       address: activities.address,
-      participants: activities.participants,
       maxParticipants: activities.maxParticipants,
       difficulty: activities.difficulty,
       date: activities.date,
@@ -57,8 +56,7 @@ export const updateActivity = async (
       extraDetails: activities.extraDetails,
       updatedAt: activities.updatedAt,
       pics: activities.pics,
-    })
-    .where(eq(activities.id, activityId));
+    });
 
   return result[0] as Activity;
 };
@@ -72,7 +70,6 @@ export const getUserActivities = async (userId: string) => {
       createdAt: activities.createdAt,
       online: activities.online,
       address: activities.address,
-      participants: activities.participants,
       maxParticipants: activities.maxParticipants,
       difficulty: activities.difficulty,
       date: activities.date,
@@ -94,4 +91,17 @@ export const createActivityRequest = async (userId: string, activityId: string) 
   });
 
   return result[0];
+};
+
+export const updateActivityRequest = async (
+  activityId: string,
+  status: Partial<ActivityRequestState>,
+  reason?: string,
+) => {
+  const result = await db
+    .update(activityRequests)
+    .set({ state: status, rejectedReason: reason })
+    .where(eq(activityRequests.activityId, activityId));
+
+  return (result.count || 0) > 0;
 };

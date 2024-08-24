@@ -14,7 +14,6 @@ export interface BaseActivity {
   online: boolean;
   address: string;
   activityTypes: string[];
-  participants: string[];
   maxParticipants: number;
   difficulty: number;
   date: Date;
@@ -27,5 +26,4 @@ export interface Activity extends BaseActivity {
   updatedAt?: Date;
   pics?: string[];
 }
-
 export type ActivityRequestState = "pending" | "rejected" | "accepted";

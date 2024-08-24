@@ -3,7 +3,6 @@ import {
   uuid,
   text,
   timestamp,
-  uniqueIndex,
   index,
   boolean,
   varchar,
@@ -36,7 +35,7 @@ export const activities = pgTable(
     pics: varchar("pics", { length: 256 }).array(),
   },
   (activities) => ({
-    onlineIdx: uniqueIndex("online_email_idx").on(activities.online),
+    onlineIdx: index("acitivity_online_idx").on(activities.online),
     difficultyIdx: index("activity_difficulty_idx").on(activities.difficulty),
   }),
 );
@@ -45,10 +44,10 @@ export const activityRequests = pgTable("activity_requests", {
   id: uuid("id").unique().primaryKey().notNull().defaultRandom(),
   activityId: uuid("activity_id")
     .notNull()
-    .references(() => activities.id, { onDelete: "cascade" }),
+    .references(() => activities.id, { onDelete: "no action" }),
   userId: uuid("user_id")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "no action" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   state: varchar("state", { length: 8 }).$type<ActivityRequestState>().default("pending"),
   rejectedReason: text("rejected_reason"),

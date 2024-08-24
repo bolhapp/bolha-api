@@ -5,8 +5,13 @@ import type { ParameterizedContext } from "koa";
 import { getValidatedInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
-import { createActivity, createActivityRequest, updateActivity } from "@/db/activity.db";
-import type { BaseActivity } from "@/types/activity";
+import {
+  createActivity,
+  createActivityRequest,
+  updateActivity,
+  updateActivityRequest,
+} from "@/db/activity.db";
+import type { ActivityRequestState, BaseActivity } from "@/types/activity";
 import { uploadFile } from "@/services/firebase";
 
 export const create = async (ctx: ParameterizedContext) => {
@@ -19,7 +24,7 @@ export const create = async (ctx: ParameterizedContext) => {
       then: Joi.string().max(256).required(),
       otherwise: Joi.string().max(256),
     }),
-    categories: Joi.string()
+    activityTypes: Joi.string()
       .custom((value, helper) => {
         try {
           return value.split(",").map((i: string) => i.trim());
@@ -65,4 +70,29 @@ export const signup = async (ctx: ParameterizedContext) => {
 
   ctx.status = 201;
   ctx.body = newRequest;
+};
+
+interface ActivityRequestReplyPayload {
+  id: string;
+  status: ActivityRequestState;
+  reason?: string;
+}
+
+export const reply = async (ctx: ParameterizedContext) => {
+  const request = getValidatedInput<ActivityRequestReplyPayload>(
+    { ...ctx.params, ...ctx.request.body },
+    {
+      id: Joi.string().max(256).required(),
+      status: Joi.string().valid("accepted", "rejected").required(),
+      reason: Joi.string(),
+    },
+  );
+
+  const updatedRequest = await updateActivityRequest(request.id, request.status, request.reason);
+
+  if (!updatedRequest) {
+    throw new ValidationError(UNEXPECTED_ERROR);
+  }
+
+  ctx.body = "ok";
 };
