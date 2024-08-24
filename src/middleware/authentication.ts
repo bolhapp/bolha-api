@@ -1,10 +1,10 @@
-import type { Middleware } from "koa";
+import type { Middleware, ParameterizedContext, Next } from "koa";
 
 import passport from "@/modules/passport.module";
 import { ValidationError } from "@/exceptions";
-import { UNAUTHENTICATED_ERROR } from "@/errors/auth.errors";
+import { UNAUTHENTICATED_ERROR, UNAUTHORIZED_ERROR } from "@/errors/auth.errors";
 
-export default function (): Middleware {
+export function authenticated(): Middleware {
   return async (ctx, next) => {
     if (!ctx.request.url.startsWith("/api")) {
       return await next();
@@ -29,4 +29,12 @@ export default function (): Middleware {
       await next();
     })(ctx, next);
   };
+}
+
+export async function adminAuthentication(ctx: ParameterizedContext, next: Next) {
+  if (ctx.user!.type !== "admin") {
+    throw new ValidationError(UNAUTHORIZED_ERROR);
+  }
+
+  await next();
 }

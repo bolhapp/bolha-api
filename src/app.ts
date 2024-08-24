@@ -13,7 +13,7 @@ import "./db";
 import passport from "./modules/passport.module";
 import router from "./routes/index";
 import errorHandler from "./middleware/error";
-import authenticationHandler from "./middleware/authentication";
+import { authenticated } from "./middleware/authentication";
 
 const app = new Koa();
 
@@ -26,7 +26,7 @@ app
 
   .use(passport.initialize())
   // custom middelware
-  .use(authenticationHandler())
+  .use(authenticated())
   .use(errorHandler())
   // routes
   .use(router.allowedMethods())

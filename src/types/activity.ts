@@ -16,7 +16,7 @@ export interface BaseActivity {
   activityTypes: string[];
   participants: string[];
   maxParticipants: number;
-  difficulty: ActivityDifficulty;
+  difficulty: number;
   date: Date;
   restrictions?: string;
   extraDetails?: string;

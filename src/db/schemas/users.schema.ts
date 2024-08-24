@@ -57,7 +57,7 @@ export const users = pgTable(
 export const userInterests = pgTable(
   "user_interests",
   {
-    activityTypeId: uuid("activity_type_id")
+    activityTypeId: varchar("activity_type_id")
       .notNull()
       .references(() => activityTypes.id),
     userId: uuid("user_id")

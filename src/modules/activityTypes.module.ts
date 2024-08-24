@@ -1,6 +1,9 @@
+import Joi from "joi";
 import type { ParameterizedContext } from "koa";
 
-import { getActivityTypes } from "@/db/activityTypes.db";
+import { createActivityType, getActivityTypes } from "@/db/activityTypes.db";
+import { getValidatedInput } from "@/utils/request";
+import type { ActivityType } from "@/types/activtyType";
 
 const getValidInt = (int?: string, fallback: number = 0): number => {
   try {
@@ -9,8 +12,8 @@ const getValidInt = (int?: string, fallback: number = 0): number => {
     if (!isNaN(p) && p >= 0) {
       return p;
     }
-  } catch (err) {
   } finally {
+    // eslint-disable-next-line no-unsafe-finally
     return fallback;
   }
 };
@@ -20,4 +23,15 @@ export const getAll = async (ctx: ParameterizedContext) => {
   const pageSize = getValidInt(ctx.request?.query.pageSize as string | undefined, 25);
 
   ctx.body = getActivityTypes(page, pageSize);
+};
+
+export const addActivityType = async (ctx: ParameterizedContext) => {
+  const type = getValidatedInput<ActivityType>(ctx.request.body, {
+    id: Joi.string().max(256).required(),
+  });
+
+  const newType = await createActivityType(type);
+
+  ctx.status = 201;
+  ctx.body = newType;
 };

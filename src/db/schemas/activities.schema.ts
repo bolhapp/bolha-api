@@ -29,7 +29,7 @@ export const activities = pgTable(
     address: varchar("address", { length: 256 }).notNull(),
     participants: varchar("participants", { length: 256 }).array(),
     maxParticipants: integer("max_participants").notNull(),
-    difficulty: varchar("difficulty", { length: 15 }).notNull(),
+    difficulty: integer("difficulty").notNull(),
     date: timestamp("date", { withTimezone: true }).notNull(),
     restrictions: text("restrictions"),
     extraDetails: text("extraDetails"),
@@ -57,7 +57,7 @@ export const activityRequests = pgTable("activity_requests", {
 export const activityCategories = pgTable(
   "activity_categories",
   {
-    activityTypeId: uuid("activity_type_id")
+    activityTypeId: varchar("activity_type_id")
       .notNull()
       .references(() => activityTypes.id),
     activityId: uuid("activity_id")
