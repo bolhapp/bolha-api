@@ -10,7 +10,7 @@ import { ValidationError } from "@/exceptions";
 import { USER_NOT_FOUND } from "@/errors/user.errors";
 import { EMAIL_TAKEN } from "@/errors/auth.errors";
 import { INVALID_PARAMS } from "@/errors/index.errors";
-import { getUserActivities } from "@/db/activity.db";
+import { getUserActivities } from "@/db/userActivities.db";
 
 export const userDetails = async (ctx: ParameterizedContext) => {
   const { id } = getValidatedInput<{ id: string }>(ctx.params, {
