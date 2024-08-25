@@ -29,6 +29,20 @@
       "when": 1724517411900,
       "tag": "0003_wonderful_mesmero",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1724601436040,
+      "tag": "0004_lively_darkstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1724601464683,
+      "tag": "0005_powerful_mantis",
+      "breakpoints": true
     }
   ]
 }

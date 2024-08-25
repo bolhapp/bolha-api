@@ -43,3 +43,10 @@ export const updateActivityRequest = async (
   return success;
 };
 
+export const deleteActivityRequest = async (activityId: string, userId: string) => {
+  const result = await db
+    .delete(activityRequests)
+    .where(and(eq(activityRequests.activityId, activityId), eq(activityRequests.userId, userId)));
+
+  return result;
+};

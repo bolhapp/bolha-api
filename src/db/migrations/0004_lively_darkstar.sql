@@ -1,0 +1,1 @@
+ALTER TABLE "activities" ADD COLUMN "num_participants" integer DEFAULT 0;

@@ -5,12 +5,13 @@ import type { ParameterizedContext } from "koa";
 import { getValidatedInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
+import { createActivity, updateActivity } from "@/db/activity.db";
+import { deleteUserActivity } from "@/db/userActivities.db";
 import {
-  createActivity,
   createActivityRequest,
-  updateActivity,
+  deleteActivityRequest,
   updateActivityRequest,
-} from "@/db/activity.db";
+} from "@/db/activityRequest.db";
 import type { ActivityRequestState, BaseActivity } from "@/types/activity";
 import { uploadFile } from "@/services/firebase";
 
@@ -91,6 +92,29 @@ export const reply = async (ctx: ParameterizedContext) => {
   const updateSuccessful = await updateActivityRequest(request.id, request.status, request.reason);
 
   if (!updateSuccessful) {
+    throw new ValidationError(UNEXPECTED_ERROR);
+  }
+
+  ctx.body = "ok";
+};
+
+export const leave = async (ctx: ParameterizedContext) => {
+  const request = getValidatedInput<ActivityRequestReplyPayload>(
+    { ...ctx.params, ...ctx.request.query },
+    {
+      id: Joi.string().max(256).required(),
+      status: Joi.string().valid("accepted", "pending").required(),
+    },
+  );
+
+  let result;
+  if (request.status === "accepted") {
+    result = await deleteUserActivity(request.id, ctx.user!.id, true);
+  } else {
+    result = await deleteActivityRequest(request.id, ctx.user!.id);
+  }
+
+  if (!result) {
     throw new ValidationError(UNEXPECTED_ERROR);
   }
 

@@ -9,5 +9,7 @@ export default (router: Router) => {
 
     .post("/api/v1/activities/:id/signup", activity.signup)
 
-    .patch("/api/v1/activities/:id/reply", activity.reply);
+    .patch("/api/v1/activities/:id/reply", activity.reply)
+
+    .delete("/api/v1/activities/:id/leave", activity.leave);
 };
