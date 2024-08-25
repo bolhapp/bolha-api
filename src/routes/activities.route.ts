@@ -7,6 +7,8 @@ export default (router: Router) => {
   router
     .post("/api/v1/activities", multer.any(), activity.create)
 
+    .patch("/api/v1/activities/:id", multer.any(), activity.update)
+
     .delete("/api/v1/activities/:id", activity.remove)
 
     .post("/api/v1/activities/:id/signup", activity.signup)

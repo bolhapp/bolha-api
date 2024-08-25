@@ -5,15 +5,15 @@ import type { ParameterizedContext } from "koa";
 import { getValidatedInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
-import { createActivity, deleteActivity, updateActivity } from "@/db/activity.db";
+import { createActivity, deleteActivity, getActivity, updateActivity } from "@/db/activity.db";
 import { deleteUserActivity } from "@/db/userActivities.db";
 import {
   createActivityRequest,
   deleteActivityRequest,
   updateActivityRequest,
 } from "@/db/activityRequest.db";
-import type { ActivityRequestState, BaseActivity } from "@/types/activity";
-import { uploadFile } from "@/services/firebase";
+import type { ActivityRequestState, ActivityToUpdate, BaseActivity } from "@/types/activity";
+import { deleteFile, uploadFile } from "@/services/firebase";
 
 export const create = async (ctx: ParameterizedContext) => {
   const activity = getValidatedInput<BaseActivity>(ctx.request.body, {
@@ -63,9 +63,82 @@ export const remove = async (ctx: ParameterizedContext) => {
     id: Joi.string().max(256).required(),
   });
 
-  await deleteActivity(request.id, ctx.user!.id);
+  const pics = await deleteActivity(request.id, ctx.user!.id);
+
+  if (!pics) {
+    throw new ValidationError(UNEXPECTED_ERROR);
+  }
+
+  // delete any files that may exist
+  if (pics?.length) {
+    await Promise.all([pics.map((f) => deleteFile(f))]);
+  }
 
   ctx.body = "ok";
+};
+
+export const update = async (ctx: ParameterizedContext) => {
+  const activity = getValidatedInput<ActivityToUpdate>(ctx.request.body, {
+    name: Joi.string().max(256),
+    description: Joi.string(),
+    online: Joi.boolean(),
+    address: Joi.string().max(256),
+    activityTypes: Joi.string().custom((value, helper) => {
+      try {
+        return value.split(",").map((i: string) => i.trim());
+      } catch (_) {
+        return helper.error("any.invalid");
+      }
+    }),
+    difficulty: Joi.number().max(5).min(0),
+    maxParticipants: Joi.number(),
+    date: Joi.date().iso().min("now"),
+    restrictions: Joi.string(),
+    extraDetails: Joi.string(),
+    photosToRemove: Joi.string().custom((value, helper) => {
+      try {
+        return value.split(",").map((i: string) => i.trim());
+      } catch (_) {
+        return helper.error("any.invalid");
+      }
+    }),
+  });
+
+  const filePromises: Promise<any>[] = [];
+
+  if (activity.photosToRemove?.length) {
+    activity.photosToRemove.forEach((f) => filePromises.push(deleteFile(f)));
+  }
+
+  // upload pics if they exist
+  if (ctx.files?.length) {
+    (ctx.files as File[]).forEach((f) => filePromises.push(uploadFile(f, ctx.user!.id)));
+  }
+
+  if (filePromises.length) {
+    // get activity pics because we wanna make sure we add to the pics array
+    // if we're keeping any, or remove them from the array if we're not
+    filePromises.splice(0, 0, getActivity(ctx.params.id, [], ["pics"]));
+
+    const result = await Promise.all(filePromises);
+
+    const existingPics = result[0]?.pics || [];
+
+    activity.pics = [
+      ...(activity.photosToRemove?.length
+        ? existingPics.filter((p: string) => activity.photosToRemove.includes(p))
+        : existingPics),
+      ...result.filter((f) => typeof f === "string"),
+    ];
+  }
+
+  const updated = await updateActivity(ctx.params.id, activity, ctx.user!.id);
+
+  if (!updated) {
+    throw new ValidationError(UNEXPECTED_ERROR);
+  }
+
+  ctx.body = updated;
 };
 
 export const signup = async (ctx: ParameterizedContext) => {

@@ -27,4 +27,9 @@ export interface Activity extends BaseActivity {
   updatedAt?: Date;
   pics?: string[];
 }
+
+export interface ActivityToUpdate extends Activity {
+  photosToRemove: string[];
+}
+
 export type ActivityRequestState = "pending" | "rejected" | "accepted";
