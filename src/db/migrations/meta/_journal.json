@@ -43,6 +43,13 @@
       "when": 1724601464683,
       "tag": "0005_powerful_mantis",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1724602906480,
+      "tag": "0006_plain_aaron_stack",
+      "breakpoints": true
     }
   ]
 }

@@ -9,7 +9,8 @@
     "script": "ts-node -r tsconfig-paths/register ",
     "db:ui": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "yarn db:generate && drizzle-kit migrate"
+    "db:migrate": "yarn db:generate && drizzle-kit migrate",
+    "db:drop-migration": "drizzle-kit drop"
   },
   "engines": {
     "node": ">= 22.5.1"

@@ -26,6 +26,9 @@ export const activities = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }),
     online: boolean("online").notNull(),
     address: varchar("address", { length: 256 }).notNull(),
+    createdBy: uuid("createdBy")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
     numParticipants: integer("num_participants").default(0),
     maxParticipants: integer("max_participants").notNull(),
     difficulty: integer("difficulty").notNull(),
@@ -44,10 +47,10 @@ export const activityRequests = pgTable("activity_requests", {
   id: uuid("id").unique().primaryKey().notNull().defaultRandom(),
   activityId: uuid("activity_id")
     .notNull()
-    .references(() => activities.id, { onDelete: "no action" }),
+    .references(() => activities.id, { onDelete: "cascade" }),
   userId: uuid("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: "no action" }),
+    .references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   state: varchar("state", { length: 8 }).$type<ActivityRequestState>().default("pending"),
   rejectedReason: text("rejected_reason"),
@@ -58,10 +61,10 @@ export const activityCategories = pgTable(
   {
     activityTypeId: varchar("activity_type_id")
       .notNull()
-      .references(() => activityTypes.id),
+      .references(() => activityTypes.id, { onDelete: "cascade" }),
     activityId: uuid("activity_id")
       .notNull()
-      .references(() => activities.id),
+      .references(() => activities.id, { onDelete: "cascade" }),
   },
   (activityCategories) => ({
     idIdx: primaryKey({

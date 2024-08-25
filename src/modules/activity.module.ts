@@ -5,7 +5,7 @@ import type { ParameterizedContext } from "koa";
 import { getValidatedInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
-import { createActivity, updateActivity } from "@/db/activity.db";
+import { createActivity, deleteActivity, updateActivity } from "@/db/activity.db";
 import { deleteUserActivity } from "@/db/userActivities.db";
 import {
   createActivityRequest,
@@ -56,6 +56,16 @@ export const create = async (ctx: ParameterizedContext) => {
 
   ctx.status = 201;
   ctx.body = newActivity;
+};
+
+export const remove = async (ctx: ParameterizedContext) => {
+  const request = getValidatedInput(ctx.params, {
+    id: Joi.string().max(256).required(),
+  });
+
+  await deleteActivity(request.id, ctx.user!.id);
+
+  ctx.body = "ok";
 };
 
 export const signup = async (ctx: ParameterizedContext) => {

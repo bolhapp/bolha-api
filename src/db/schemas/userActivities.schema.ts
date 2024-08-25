@@ -9,10 +9,10 @@ export const userActivities = pgTable(
   {
     userId: uuid("user_id")
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "cascade" }),
     activityId: uuid("activity_id")
       .notNull()
-      .references(() => activities.id),
+      .references(() => activities.id, { onDelete: "cascade" }),
     host: boolean("host").notNull(),
   },
   (userActivities) => ({
