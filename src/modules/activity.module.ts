@@ -174,9 +174,7 @@ export const getAll = async (ctx: ParameterizedContext) => {
 };
 
 export const signup = async (ctx: ParameterizedContext) => {
-  const request = getValidatedInput(ctx.params, {
-    id: Joi.string().max(256).required(),
-  });
+  const request = getValidatedInput(ctx.params, { id: Joi.string().max(256).required() });
 
   const newRequest = await createActivityRequest(ctx.user!.id, request.id);
 
@@ -190,21 +188,26 @@ export const signup = async (ctx: ParameterizedContext) => {
 
 interface ActivityRequestReplyPayload {
   id: string;
+  requestId: string;
   status: ActivityRequestState;
   reason?: string;
 }
 
 export const reply = async (ctx: ParameterizedContext) => {
   const request = getValidatedInput<ActivityRequestReplyPayload>(
-    { ...ctx.params, ...ctx.request.body },
+    { requestId: ctx.params.requestId, ...ctx.request.body },
     {
-      id: Joi.string().max(256).required(),
+      requestId: Joi.string().max(256).required(),
       status: Joi.string().valid("accepted", "rejected").required(),
       reason: Joi.string(),
     },
   );
 
-  const updateSuccessful = await updateActivityRequest(request.id, request.status, request.reason);
+  const updateSuccessful = await updateActivityRequest(
+    request.requestId,
+    request.status,
+    request.reason,
+  );
 
   if (!updateSuccessful) {
     throw new ValidationError(UNEXPECTED_ERROR);
@@ -214,7 +217,7 @@ export const reply = async (ctx: ParameterizedContext) => {
 };
 
 export const leave = async (ctx: ParameterizedContext) => {
-  const request = getValidatedInput<ActivityRequestReplyPayload>(
+  const request = getValidatedInput<{ id: string; status: "accepted" | "pending" }>(
     { ...ctx.params, ...ctx.request.query },
     {
       id: Joi.string().max(256).required(),

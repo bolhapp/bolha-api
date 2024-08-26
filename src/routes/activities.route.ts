@@ -13,11 +13,11 @@ export default (router: Router) => {
 
     .delete("/api/v1/activities/:id", activity.remove)
 
-    .post("/api/v1/activities/:id/signup", activity.signup)
+    .delete("/api/v1/activities/:id/leave", activity.leave)
 
     .get("/api/v1/activities/:id/requests", activity.getPendingRequests)
 
-    .patch("/api/v1/activities/:id/reply", activity.reply)
+    .post("/api/v1/activities/:id/requests/signup", activity.signup)
 
-    .delete("/api/v1/activities/:id/leave", activity.leave);
+    .patch("/api/v1/activities/:id/requests/:requestId/reply", activity.reply);
 };
