@@ -15,6 +15,8 @@ export default (router: Router) => {
 
     .post("/api/v1/activities/:id/signup", activity.signup)
 
+    .get("/api/v1/activities/:id/requests", activity.getPendingRequests)
+
     .patch("/api/v1/activities/:id/reply", activity.reply)
 
     .delete("/api/v1/activities/:id/leave", activity.leave);

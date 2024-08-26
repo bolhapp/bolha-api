@@ -196,7 +196,7 @@ export const getActivities = async ({
     })
     .from(activities)
     .groupBy(activities.id)
-    .leftJoin(userActivities, and(eq(activities.id, userActivities.activityId)))
+    .leftJoin(userActivities, eq(activities.id, userActivities.activityId))
     .leftJoin(users, eq(userActivities.userId, users.id))
     .leftJoin(activityCategories, eq(activityCategories.activityId, activities.id))
     .where(whereQuery)

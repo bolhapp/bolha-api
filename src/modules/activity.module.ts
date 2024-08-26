@@ -16,6 +16,7 @@ import { deleteUserActivity } from "@/db/userActivities.db";
 import {
   createActivityRequest,
   deleteActivityRequest,
+  getActivityRequests,
   updateActivityRequest,
 } from "@/db/activityRequest.db";
 import type {
@@ -25,6 +26,7 @@ import type {
   GetActivitiesQuery,
 } from "@/types/activity";
 import { deleteFile, uploadFile } from "@/services/firebase";
+import { pageValidator } from "@/utils/validators";
 
 export const create = async (ctx: ParameterizedContext) => {
   const activity = getValidatedInput<BaseActivity>(ctx.request.body, {
@@ -154,7 +156,7 @@ export const update = async (ctx: ParameterizedContext) => {
 
 export const getAll = async (ctx: ParameterizedContext) => {
   const payload = getValidatedInput<GetActivitiesQuery>(ctx.request.query, {
-    page: Joi.number().required(),
+    page: pageValidator,
     sortOrder: Joi.string().valid("asc", "desc").required(),
     sortField: Joi.string().required(),
     query: Joi.string(),
@@ -232,4 +234,22 @@ export const leave = async (ctx: ParameterizedContext) => {
   }
 
   ctx.body = "ok";
+};
+
+export const getPendingRequests = async (ctx: ParameterizedContext) => {
+  const payload = getValidatedInput<{ id: string; page: number }>(
+    { ...ctx.params, ...ctx.request.query },
+    {
+      id: Joi.string().required(),
+      page: pageValidator,
+    },
+  );
+
+  const requests = await getActivityRequests(payload.id, payload.page);
+
+  if (!requests) {
+    throw new ValidationError(UNEXPECTED_ERROR);
+  }
+
+  ctx.body = requests;
 };
