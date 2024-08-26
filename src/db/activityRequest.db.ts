@@ -16,25 +16,30 @@ export const createActivityRequest = async (userId: string, activityId: string) 
 };
 
 export const updateActivityRequest = async (
-  activityId: string,
+  id: string,
   status: Partial<ActivityRequestState>,
   reason?: string,
 ) => {
   let success = false;
+
   await db.transaction(async (tx) => {
     const result = await tx
       .update(activityRequests)
       .set({ state: status, rejectedReason: reason })
-      .where(eq(activityRequests.activityId, activityId))
-      .returning({ userId: activityRequests.userId });
+      .where(eq(activityRequests.id, id))
+      .returning({ userId: activityRequests.userId, activityId: activityRequests.activityId });
 
-    if (result[0]) {
-      success = true;
+    if (!result[0]) {
+      return false;
     }
+
+    success = true;
 
     if (status === "accepted") {
       await Promise.all([
-        tx.update(userActivities).set({ userId: result[0].userId, activityId, host: false }),
+        tx
+          .update(userActivities)
+          .set({ userId: result[0].userId, activityId: result[0].activityId, host: false }),
         tx.update(activities).set({ numParticipants: sql`${activities.numParticipants} + 1` }),
       ]);
     }

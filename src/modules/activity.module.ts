@@ -5,14 +5,25 @@ import type { ParameterizedContext } from "koa";
 import { getValidatedInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
-import { createActivity, deleteActivity, getActivity, updateActivity } from "@/db/activity.db";
+import {
+  createActivity,
+  deleteActivity,
+  getActivity,
+  updateActivity,
+  getActivities,
+} from "@/db/activity.db";
 import { deleteUserActivity } from "@/db/userActivities.db";
 import {
   createActivityRequest,
   deleteActivityRequest,
   updateActivityRequest,
 } from "@/db/activityRequest.db";
-import type { ActivityRequestState, ActivityToUpdate, BaseActivity } from "@/types/activity";
+import type {
+  ActivityRequestState,
+  ActivityToUpdate,
+  BaseActivity,
+  GetActivitiesQuery,
+} from "@/types/activity";
 import { deleteFile, uploadFile } from "@/services/firebase";
 
 export const create = async (ctx: ParameterizedContext) => {
@@ -139,6 +150,25 @@ export const update = async (ctx: ParameterizedContext) => {
   }
 
   ctx.body = updated;
+};
+
+export const getAll = async (ctx: ParameterizedContext) => {
+  const payload = getValidatedInput<GetActivitiesQuery>(ctx.request.query, {
+    page: Joi.number().required(),
+    sortOrder: Joi.string().valid("asc", "desc").required(),
+    sortField: Joi.string().required(),
+    query: Joi.string(),
+    name: Joi.string(),
+    description: Joi.string(),
+    restrictions: Joi.string(),
+    extraDetails: Joi.string(),
+    activityType: Joi.string(),
+    maxParticipants: Joi.number(),
+    numParticipants: Joi.number(),
+    difficulty: Joi.number(),
+  });
+
+  ctx.body = await getActivities(payload);
 };
 
 export const signup = async (ctx: ParameterizedContext) => {

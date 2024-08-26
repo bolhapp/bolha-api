@@ -5,6 +5,8 @@ import multer from "@/services/multer";
 
 export default (router: Router) => {
   router
+    .get("/api/v1/activities", activity.getAll)
+
     .post("/api/v1/activities", multer.any(), activity.create)
 
     .patch("/api/v1/activities/:id", multer.any(), activity.update)

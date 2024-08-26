@@ -1,3 +1,5 @@
+import type { QueryParams } from "./misc";
+
 export enum ActivityDifficulty {
   first_time,
   beginner,
@@ -33,3 +35,14 @@ export interface ActivityToUpdate extends Activity {
 }
 
 export type ActivityRequestState = "pending" | "rejected" | "accepted";
+
+export interface GetActivitiesQuery extends QueryParams {
+  name?: string;
+  description?: string;
+  restrictions?: string;
+  extraDetails?: string;
+  activityType?: string;
+  maxParticipants?: number;
+  numParticipants?: number;
+  difficulty?: number;
+}

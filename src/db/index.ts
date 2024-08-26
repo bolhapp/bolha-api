@@ -1,6 +1,11 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
+import * as activitySchemas from "@/db/schemas/activities.schema";
+import * as userSchemas from "@/db/schemas/users.schema";
+import * as userActivitySchemas from "@/db/schemas/userActivities.schema";
+import * as activityTypeSchemas from "@/db/schemas/activityTypes.schema";
+
 const url = process.env.POSTGRES_URL;
 
 if (!url) {
@@ -9,5 +14,10 @@ if (!url) {
 
 export const db = drizzle(postgres(url), {
   logger: true,
-  schema: {},
+  schema: {
+    ...activitySchemas,
+    ...userSchemas,
+    ...userActivitySchemas,
+    ...activityTypeSchemas,
+  },
 });

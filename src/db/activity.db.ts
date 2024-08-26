@@ -1,10 +1,14 @@
-import { and, eq } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { PgColumn } from "drizzle-orm/pg-core";
 
 import { db } from ".";
 import { activities, activityCategories } from "./schemas/activities.schema";
 import { userActivities } from "./schemas/userActivities.schema";
-import type { Activity, BaseActivity } from "@/types/activity";
-import { PgColumn } from "drizzle-orm/pg-core";
+import type { Activity, BaseActivity, GetActivitiesQuery } from "@/types/activity";
+import { users } from "./schemas/users.schema";
+import { getFieldQuery, getFreeInputQuery } from "./utils";
+
+const PAGE_SIZE = 25;
 
 export const createActivity = async (userId: string, payload: BaseActivity): Promise<Activity> => {
   const result = await db
@@ -110,4 +114,96 @@ export const getActivity = async (
     .limit(1);
 
   return result.length ? result[0] : null;
+};
+
+export const getActivities = async ({
+  page,
+  sortField,
+  sortOrder,
+  query,
+  name,
+  description,
+  restrictions,
+  extraDetails,
+  activityType,
+  maxParticipants,
+  numParticipants,
+  difficulty,
+}: GetActivitiesQuery) => {
+  const getOrder = sortOrder === "asc" ? asc : desc;
+
+  let whereQuery;
+  if (query) {
+    // doing fuzzy search
+    whereQuery = getFreeInputQuery(query, [
+      activities.name,
+      activities.description,
+      activities.restrictions,
+      activities.extraDetails,
+      activityCategories.activityTypeId,
+      activities.maxParticipants,
+      activities.numParticipants,
+      activities.difficulty,
+    ]);
+  } else {
+    // searching specifically for a field
+    const fieldQueries = getFieldQuery([
+      { field: activities.name, value: name },
+      { field: activities.description, value: description },
+      { field: activities.restrictions, value: restrictions },
+      { field: activities.extraDetails, value: extraDetails },
+      { field: activityCategories.activityTypeId, value: activityType },
+      { field: activities.maxParticipants, value: maxParticipants },
+      { field: activities.numParticipants, value: numParticipants },
+      { field: activities.difficulty, value: difficulty },
+    ]);
+
+    if (fieldQueries) {
+      whereQuery = fieldQueries;
+    }
+  }
+
+  const results = await db
+    .select({
+      id: activities.id,
+      name: activities.name,
+      createdAt: activities.createdAt,
+      description: activities.description,
+      date: activities.date,
+      online: activities.online,
+      address: activities.address,
+      numParticipants: activities.numParticipants,
+      maxParticipants: activities.maxParticipants,
+      difficulty: activities.difficulty,
+      restrictions: activities.restrictions,
+      extraDetails: activities.extraDetails,
+      updatedAt: activities.updatedAt,
+      pics: activities.pics,
+      activityTypes: sql`ARRAY_AGG(${activityCategories.activityTypeId})`,
+      // groups users into the participants array
+      // CASE with FILTER to only return values of users that exist
+      // so we don't get a [{id: null, name: null}]
+      participants: sql`
+        ARRAY_AGG(
+          CASE 
+            WHEN ${users.id} IS NOT NULL 
+            THEN jsonb_build_object('id', ${users.id}, 'name', ${users.name}) 
+            ELSE NULL 
+          END
+        ) 
+        FILTER (WHERE ${users.id} IS NOT NULL)
+      `,
+    })
+    .from(activities)
+    .groupBy(activities.id)
+    .leftJoin(userActivities, and(eq(activities.id, userActivities.activityId)))
+    .leftJoin(users, eq(userActivities.userId, users.id))
+    .leftJoin(activityCategories, eq(activityCategories.activityId, activities.id))
+    .where(whereQuery)
+    // @ts-expect-error TS complains about sortField being "any"
+    .orderBy(getOrder(activities[sortField]))
+    .limit(PAGE_SIZE)
+    .offset(page * PAGE_SIZE);
+
+  return results;
 };
