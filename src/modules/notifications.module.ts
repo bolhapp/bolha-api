@@ -3,7 +3,7 @@ import type { ParameterizedContext } from "koa";
 
 import { getValidatedInput } from "@/utils/request";
 import { ValidationError } from "@/exceptions";
-import { UNEXPECTED_ERROR } from "@/errors/index.errors";
+import { NOT_FOUND, UNEXPECTED_ERROR } from "@/errors/index.errors";
 import type { QueryParams } from "@/types/misc";
 import { pageValidator, sortOrderValidator } from "@/utils/validators";
 import {
@@ -13,12 +13,7 @@ import {
   updateNotification,
   addNotification,
 } from "@/db/notification.db";
-import {
-  BaseNotification,
-  NotificationType,
-  UpdateNotificationPayload,
-} from "@/types/notifications";
-import { getActivity } from "@/db/activity.db";
+import { BaseNotification, UpdateNotificationPayload } from "@/types/notifications";
 
 export const getAll = async (ctx: ParameterizedContext) => {
   const payload = getValidatedInput<QueryParams>(ctx.request.query, {
@@ -35,7 +30,13 @@ export const getDetails = async (ctx: ParameterizedContext) => {
     id: Joi.string().required(),
   });
 
-  ctx.body = await getNotification(payload.id);
+  const notif = await getNotification(payload.id);
+
+  if (notif) {
+    ctx.body = notif;
+  }
+
+  throw new ValidationError(NOT_FOUND);
 };
 
 export const update = async (ctx: ParameterizedContext) => {

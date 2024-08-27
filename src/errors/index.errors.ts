@@ -21,5 +21,11 @@ export const UNSUPPORTED_FORMAT: ValidationErrorPayload = {
 export const INVALID_PARAMS: ValidationErrorPayload = {
   statusCode: 422,
   statusMessage: "invalid_params",
-  errorCode: 1003,
+  errorCode: 1004,
+} as const;
+
+export const NOT_FOUND: ValidationErrorPayload = {
+  statusCode: 404,
+  statusMessage: "resource_not_found",
+  errorCode: 1005,
 } as const;

@@ -4,6 +4,7 @@ import addAuthRoutes from "./auth.route";
 import addActivtyTypesRoutes from "./activityTypes.route";
 import addUsersRoutes from "./users.route";
 import addActivitiesRoutes from "./activities.route";
+import addNotificationsRoutes from "./notifications.route";
 
 const router = new Router();
 
@@ -17,5 +18,6 @@ addAuthRoutes(router);
 addActivtyTypesRoutes(router);
 addUsersRoutes(router);
 addActivitiesRoutes(router);
+addNotificationsRoutes(router);
 
 export default router;

@@ -5,6 +5,7 @@ import { getOrder } from "./utils";
 import { notifications } from "./schemas/notifications.schema";
 import type { QueryParams } from "@/types/misc";
 import type { BaseNotification, UpdateNotificationPayload } from "@/types/notifications";
+import { users } from "./schemas/users.schema";
 
 const PAGE_SIZE = 25;
 
@@ -16,8 +17,14 @@ export const getNotification = async (id: string) => {
       payload: notifications.payload,
       read: notifications.read,
       createdAt: notifications.createdAt,
+      user: {
+        id: users.id,
+        name: users.name,
+        photo: users.picUrl,
+      },
     })
     .from(notifications)
+    .innerJoin(users, eq(users.id, notifications.userId))
     .where(eq(notifications.id, id))
     .limit(1);
 
