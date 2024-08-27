@@ -18,3 +18,5 @@ export const tokenValidator = (length: number = 33) => {
 };
 
 export const pageValidator = Joi.number().min(0).required();
+
+export const sortOrderValidator = Joi.string().valid("asc", "desc").required();

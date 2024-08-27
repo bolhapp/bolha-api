@@ -2,7 +2,7 @@ import type { ParameterizedContext } from "koa";
 import Joi from "joi";
 
 import { getUser, updateUser } from "@/db/user.db";
-import { emailValidator, pageValidator } from "@/utils/validators";
+import { emailValidator, pageValidator, sortOrderValidator } from "@/utils/validators";
 import { getValidatedInput } from "@/utils/request";
 import type { User } from "@/types/user";
 import { USER_GENDER } from "@/db/schemas/users.schema";
@@ -60,7 +60,7 @@ export const editUser = async (ctx: ParameterizedContext) => {
 export const getOwnActivities = async (ctx: ParameterizedContext) => {
   const payload = getValidatedInput<Omit<QueryParams, "query">>(ctx.request.query, {
     page: pageValidator,
-    sortOrder: Joi.string().valid("asc", "desc").required(),
+    sortOrder: sortOrderValidator,
     sortField: Joi.string().required(),
   });
 

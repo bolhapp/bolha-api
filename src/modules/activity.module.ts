@@ -26,7 +26,7 @@ import type {
   GetActivitiesQuery,
 } from "@/types/activity";
 import { deleteFile, uploadFile } from "@/services/firebase";
-import { pageValidator } from "@/utils/validators";
+import { pageValidator, sortOrderValidator } from "@/utils/validators";
 
 export const create = async (ctx: ParameterizedContext) => {
   const activity = getValidatedInput<BaseActivity>(ctx.request.body, {
@@ -157,7 +157,7 @@ export const update = async (ctx: ParameterizedContext) => {
 export const getAll = async (ctx: ParameterizedContext) => {
   const payload = getValidatedInput<GetActivitiesQuery>(ctx.request.query, {
     page: pageValidator,
-    sortOrder: Joi.string().valid("asc", "desc").required(),
+    sortOrder: sortOrderValidator,
     sortField: Joi.string().required(),
     query: Joi.string(),
     name: Joi.string(),
