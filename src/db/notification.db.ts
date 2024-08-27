@@ -44,8 +44,8 @@ export const getNotifications = async (
     .offset(page * PAGE_SIZE);
 };
 
-export const createActivity = async (payload: BaseNotification, userId: string) => {
-  await db.insert(notifications).values({ ...payload, userId, read: false });
+export const addNotification = async (payload: BaseNotification) => {
+  await db.insert(notifications).values({ ...payload, read: false });
 };
 
 export const updateNotification = async (payload: UpdateNotificationPayload) => {

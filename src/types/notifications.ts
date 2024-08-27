@@ -1,4 +1,4 @@
-export type NotificationType = "newRequest" | "requestRejected" | "requestAccepted";
+export type NotificationType = "newRequest" | "requestRejected" | "requestAccepted" | "userLeft";
 
 export interface BaseNotification {
   userId: string;

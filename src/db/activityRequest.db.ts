@@ -23,20 +23,25 @@ export const updateActivityRequest = async (
   status: Partial<ActivityRequestState>,
   reason?: string,
 ) => {
-  let success = false;
+  let request = null;
 
   await db.transaction(async (tx) => {
     const result = await tx
       .update(activityRequests)
       .set({ state: status, rejectedReason: reason })
       .where(eq(activityRequests.id, id))
-      .returning({ userId: activityRequests.userId, activityId: activityRequests.activityId });
+      .returning({
+        userId: activityRequests.userId,
+        activityId: activityRequests.activityId,
+        state: activityRequests.state,
+        rejectedReason: activityRequests.rejectedReason,
+      });
 
     if (!result[0]) {
-      return false;
+      return null;
     }
 
-    success = true;
+    request = result[0];
 
     if (status === "accepted") {
       await Promise.all([
@@ -48,15 +53,21 @@ export const updateActivityRequest = async (
     }
   });
 
-  return success;
+  return request;
 };
 
 export const deleteActivityRequest = async (activityId: string, userId: string) => {
   const result = await db
     .delete(activityRequests)
-    .where(and(eq(activityRequests.activityId, activityId), eq(activityRequests.userId, userId)));
+    .where(and(eq(activityRequests.activityId, activityId), eq(activityRequests.userId, userId)))
+    .returning({
+      userId: activityRequests.userId,
+      activityId: activityRequests.activityId,
+      state: activityRequests.state,
+      rejectedReason: activityRequests.rejectedReason,
+    });
 
-  return result;
+  return result || null;
 };
 
 export const getActivityRequests = async (activityId: string, page: number) => {

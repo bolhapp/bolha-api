@@ -93,7 +93,7 @@ export const deleteActivity = async (activityId: string, userId: string) => {
   return result[0].pics;
 };
 
-export const getActivity = async (
+export const getActivity = async <T = any & { id: string }>(
   id: string,
   filter: Array<Array<string | any>> = [],
   fields: string[] = [],
@@ -113,7 +113,7 @@ export const getActivity = async (
     .where(and(eq(activities.id, id), ...filter.map(([key, value]) => eq(activities[key], value))))
     .limit(1);
 
-  return result.length ? result[0] : null;
+  return result.length ? (result[0] as T) : null;
 };
 
 export const getActivities = async ({

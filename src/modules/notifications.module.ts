@@ -11,8 +11,14 @@ import {
   getNotification,
   getNotifications,
   updateNotification,
+  addNotification,
 } from "@/db/notification.db";
-import { UpdateNotificationPayload } from "@/types/notifications";
+import {
+  BaseNotification,
+  NotificationType,
+  UpdateNotificationPayload,
+} from "@/types/notifications";
+import { getActivity } from "@/db/activity.db";
 
 export const getAll = async (ctx: ParameterizedContext) => {
   const payload = getValidatedInput<QueryParams>(ctx.request.query, {
@@ -55,4 +61,10 @@ export const remove = async (ctx: ParameterizedContext) => {
 
   await deleteNotification(payload.id, ctx.user!.id);
   ctx.body = "OK";
+};
+
+export const createNotification = async (notif: BaseNotification) => {
+  const notification = await addNotification(notif);
+
+  // todo: fire notification
 };

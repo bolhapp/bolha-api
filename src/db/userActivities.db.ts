@@ -5,7 +5,7 @@ import { activities } from "./schemas/activities.schema";
 import { userActivities } from "./schemas/userActivities.schema";
 
 export const deleteUserActivity = async (activityId: string, userId: string, accepted: boolean) => {
-  const success = true;
+  let result = null;
 
   await db.transaction(async (tx) => {
     const promises: any[] = [
@@ -24,8 +24,10 @@ export const deleteUserActivity = async (activityId: string, userId: string, acc
       );
     }
 
-    await Promise.all(promises);
+    const resolved = await Promise.all(promises);
+
+    result = resolved[0];
   });
 
-  return success;
+  return result;
 };

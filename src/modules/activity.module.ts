@@ -27,6 +27,7 @@ import type {
 } from "@/types/activity";
 import { deleteFile, uploadFile } from "@/services/firebase";
 import { pageValidator, sortOrderValidator } from "@/utils/validators";
+import { createNotification } from "@/modules/notifications.module";
 
 export const create = async (ctx: ParameterizedContext) => {
   const activity = getValidatedInput<BaseActivity>(ctx.request.body, {
@@ -182,6 +183,14 @@ export const signup = async (ctx: ParameterizedContext) => {
     throw new ValidationError(UNEXPECTED_ERROR);
   }
 
+  const activity = await getActivity<{ createdBy: string }>(request.id, [], ["createdBy"]);
+
+  if (!activity) {
+    throw new ValidationError(UNEXPECTED_ERROR);
+  }
+
+  await createNotification({ userId: activity.createdBy, type: "newRequest", payload: newRequest });
+
   ctx.status = 201;
   ctx.body = newRequest;
 };
@@ -203,15 +212,21 @@ export const reply = async (ctx: ParameterizedContext) => {
     },
   );
 
-  const updateSuccessful = await updateActivityRequest(
+  const updatedRequest = await updateActivityRequest(
     request.requestId,
     request.status,
     request.reason,
   );
 
-  if (!updateSuccessful) {
+  if (!updatedRequest) {
     throw new ValidationError(UNEXPECTED_ERROR);
   }
+
+  await createNotification({
+    userId: ctx.user!.id,
+    type: request.status === "accepted" ? "requestAccepted" : "requestRejected",
+    payload: updatedRequest,
+  });
 
   ctx.body = "ok";
 };
@@ -235,6 +250,14 @@ export const leave = async (ctx: ParameterizedContext) => {
   if (!result) {
     throw new ValidationError(UNEXPECTED_ERROR);
   }
+
+  const activity = await getActivity<{ createdBy: string }>(request.id, [], ["createdBy"]);
+
+  if (!activity) {
+    throw new ValidationError(UNEXPECTED_ERROR);
+  }
+
+  await createNotification({ userId: activity.createdBy, type: "userLeft", payload: result });
 
   ctx.body = "ok";
 };
