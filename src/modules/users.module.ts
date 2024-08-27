@@ -2,7 +2,7 @@ import type { ParameterizedContext } from "koa";
 import Joi from "joi";
 
 import { getUser, updateUser } from "@/db/user.db";
-import { emailValidator } from "@/utils/validators";
+import { emailValidator, pageValidator } from "@/utils/validators";
 import { getValidatedInput } from "@/utils/request";
 import type { User } from "@/types/user";
 import { USER_GENDER } from "@/db/schemas/users.schema";
@@ -10,7 +10,8 @@ import { ValidationError } from "@/exceptions";
 import { USER_NOT_FOUND } from "@/errors/user.errors";
 import { EMAIL_TAKEN } from "@/errors/auth.errors";
 import { INVALID_PARAMS } from "@/errors/index.errors";
-import { getUserActivities } from "@/db/userActivities.db";
+import { QueryParams } from "@/types/misc";
+import { getActivities } from "@/db/activity.db";
 
 export const userDetails = async (ctx: ParameterizedContext) => {
   const { id } = getValidatedInput<{ id: string }>(ctx.params, {
@@ -56,10 +57,12 @@ export const editUser = async (ctx: ParameterizedContext) => {
   ctx.body = await updateUser(ctx.user!.email, payload);
 };
 
-export const getActivities = async (ctx: ParameterizedContext) => {
-  const payload = getValidatedInput<{ id: string }>(ctx.params, {
-    id: Joi.string().required(),
+export const getOwnActivities = async (ctx: ParameterizedContext) => {
+  const payload = getValidatedInput<Omit<QueryParams, "query">>(ctx.request.query, {
+    page: pageValidator,
+    sortOrder: Joi.string().valid("asc", "desc").required(),
+    sortField: Joi.string().required(),
   });
 
-  ctx.body = await getUserActivities(payload.id);
+  ctx.body = await getActivities({ ...payload, userId: ctx.user!.id });
 };

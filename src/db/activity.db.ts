@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, eq, or, sql } from "drizzle-orm";
 import { PgColumn } from "drizzle-orm/pg-core";
 
 import { db } from ".";
@@ -6,7 +6,7 @@ import { activities, activityCategories } from "./schemas/activities.schema";
 import { userActivities } from "./schemas/userActivities.schema";
 import type { Activity, BaseActivity, GetActivitiesQuery } from "@/types/activity";
 import { users } from "./schemas/users.schema";
-import { getFieldQuery, getFreeInputQuery } from "./utils";
+import { getFieldQuery, getFreeInputQuery, getOrder } from "./utils";
 
 const PAGE_SIZE = 25;
 
@@ -129,22 +129,32 @@ export const getActivities = async ({
   maxParticipants,
   numParticipants,
   difficulty,
-}: GetActivitiesQuery) => {
-  const getOrder = sortOrder === "asc" ? asc : desc;
+  userId,
+}: GetActivitiesQuery & { userId?: string }) => {
+  let conditions: any = [];
 
-  let whereQuery;
+  // get activities for a specific user
+  if (userId) {
+    conditions.push(eq(users.id, userId));
+  }
+
   if (query) {
     // doing fuzzy search
-    whereQuery = getFreeInputQuery(query, [
-      activities.name,
-      activities.description,
-      activities.restrictions,
-      activities.extraDetails,
-      activityCategories.activityTypeId,
-      activities.maxParticipants,
-      activities.numParticipants,
-      activities.difficulty,
-    ]);
+    conditions = [
+      ...conditions,
+      or(
+        ...getFreeInputQuery(query, [
+          activities.name,
+          activities.description,
+          activities.restrictions,
+          activities.extraDetails,
+          activityCategories.activityTypeId,
+          activities.maxParticipants,
+          activities.numParticipants,
+          activities.difficulty,
+        ]),
+      ),
+    ];
   } else {
     // searching specifically for a field
     const fieldQueries = getFieldQuery([
@@ -159,7 +169,7 @@ export const getActivities = async ({
     ]);
 
     if (fieldQueries) {
-      whereQuery = fieldQueries;
+      conditions = [...conditions, ...fieldQueries];
     }
   }
 
@@ -179,15 +189,20 @@ export const getActivities = async ({
       extraDetails: activities.extraDetails,
       updatedAt: activities.updatedAt,
       pics: activities.pics,
-      activityTypes: sql`ARRAY_AGG(${activityCategories.activityTypeId})`,
+      host: sql`(
+        SELECT jsonb_build_object('id', ${users.id}, 'name', ${users.name}, 'photo', ${users.picUrl}) 
+        FROM users
+        WHERE ${users.id} = ${activities.createdBy}      
+      )`,
+      activityTypes: sql`ARRAY_AGG(DISTINCT(${activityCategories.activityTypeId}))`,
       // groups users into the participants array
       // CASE with FILTER to only return values of users that exist
       // so we don't get a [{id: null, name: null}]
       participants: sql`
         ARRAY_AGG(
           CASE 
-            WHEN ${users.id} IS NOT NULL 
-            THEN jsonb_build_object('id', ${users.id}, 'name', ${users.name}) 
+            WHEN ${users.id} IS NOT NULL AND ${userActivities.host} = false
+            THEN jsonb_build_object('id', ${users.id}, 'name', ${users.name}, 'photo', ${users.picUrl}) 
             ELSE NULL 
           END
         ) 
@@ -195,13 +210,16 @@ export const getActivities = async ({
       `,
     })
     .from(activities)
-    .groupBy(activities.id)
-    .leftJoin(userActivities, eq(activities.id, userActivities.activityId))
+    .groupBy(users.id, activities.id)
+    .leftJoin(
+      userActivities,
+      and(eq(activities.id, userActivities.activityId), eq(userActivities.host, false)),
+    )
     .leftJoin(users, eq(userActivities.userId, users.id))
     .leftJoin(activityCategories, eq(activityCategories.activityId, activities.id))
-    .where(whereQuery)
+    .where(and(...conditions))
     // @ts-expect-error TS complains about sortField being "any"
-    .orderBy(getOrder(activities[sortField]))
+    .orderBy(getOrder(sortOrder), activities[sortField])
     .limit(PAGE_SIZE)
     .offset(page * PAGE_SIZE);
 

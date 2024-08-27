@@ -1,25 +1,25 @@
-import { sql, eq, or, SQL, and } from "drizzle-orm";
+import { sql, eq, SQL, asc, desc } from "drizzle-orm";
 import { PgColumn } from "drizzle-orm/pg-core";
 
-export const getFreeInputQuery = (query: string, fields: PgColumn[]): SQL => {
+import type { SortOrder } from "@/types/misc";
+
+export const getFreeInputQuery = (query: string, fields: PgColumn[]): SQL[] => {
   const fuzzy = `%${query}%`;
   let num;
 
-  return or(
-    ...fields.reduce<SQL[]>((conditions, field) => {
-      if (field.columnType === "PgInteger") {
-        num = Number(query);
+  return fields.reduce<SQL[]>((conditions, field) => {
+    if (field.columnType === "PgInteger") {
+      num = Number(query);
 
-        if (!isNaN(num)) {
-          conditions.push(eq(field, num));
-        }
-      } else {
-        conditions.push(sql`unaccent(${field}) ilike unaccent(${fuzzy})`);
+      if (!isNaN(num)) {
+        conditions.push(eq(field, num));
       }
+    } else {
+      conditions.push(sql`unaccent(${field}) ilike unaccent(${fuzzy})`);
+    }
 
-      return conditions;
-    }, []),
-  ) as SQL;
+    return conditions;
+  }, []);
 };
 
 export const getFieldQuery = (
@@ -33,5 +33,7 @@ export const getFieldQuery = (
     return conditions;
   }, []);
 
-  return conds.length ? and(...conds) : null;
+  return conds.length ? conds : null;
 };
+
+export const getOrder = (sortOrder: SortOrder) => (sortOrder === "asc" ? asc : desc);

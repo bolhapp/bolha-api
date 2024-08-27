@@ -1,6 +1,8 @@
+export type SortOrder = "asc" | "desc";
+
 export interface QueryParams {
   page: number;
-  sortOrder: "asc" | "desc";
+  sortOrder: SortOrder;
   sortField: string;
   query?: string;
 }
