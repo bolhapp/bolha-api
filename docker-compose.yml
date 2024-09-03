@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  db:
+    container_name: lfg-db
+    image: "postgres"
+    environment:
+      POSTGRES_PASSWORD: "mysecretpassword"
+    ports:
+      - 5432:5432
+    volumes:
+      - lfg:/var/lib/postgresql/data -p
+
+  api:
+    container_name: lfg-api
+    build: .
+    environment:
+      PORT: 3000
+      NODE_ENV: development
+      APP_BASE_URL: http://localhost:3000
+      POSTGRES_URL: ""
+      FIREBASE_API_KEY: ""
+      JWT_SECRET: ""
+      BREVO_API_KEY: ""
+      USER_ACTION_REQUIRED_TEMPLATE_ID: ""
+      INFORMATION_TEMPLATE_ID: ""
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ./src:/usr/src/app
+
+volumes:
+  lfg:
