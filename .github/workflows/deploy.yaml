@@ -60,7 +60,7 @@ jobs:
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Step 2: Set up Docker Buildx (for building images)
       - name: Set up Docker Buildx
@@ -68,7 +68,7 @@ jobs:
 
       # Step 4: Restore the cache from the build job
       - name: Restore dist cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: dist
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
