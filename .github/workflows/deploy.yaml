@@ -55,7 +55,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build # Ensures `test` runs after `build`
+    # needs: build # Ensures `test` runs after `build`
 
     steps:
       # Step 1: Checkout the code
