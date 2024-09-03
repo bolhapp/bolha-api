@@ -87,8 +87,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ DOCKER_IMAGE }}
-
+          tags: $DOCKER_IMAGE
+      
       # Step 5: Set up SSH
       - name: Install SSH Key
         uses: webfactory/ssh-agent@v0.8.1
