@@ -14,7 +14,7 @@ jobs:
 
     environment: deploy
     env: 
-      DOCKER_IMAGE: ghcr.io/${{ github.repository_owner }}/lfg:latest
+      DOCKER_IMAGE: ghcr.io/lfgappeu/lfg-api:latest
 
     permissions: 
       contents: read
@@ -45,20 +45,6 @@ jobs:
       #     push: true
       #     tags: ${{ env.DOCKER_IMAGE }}
 
-
-      # Step 6: Deploy Docker image to EC2
-      # - name: Add SSH key
-      #   env:
-      #       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-      #   run: |
-      #     mkdir -p /home/runner/.ssh
-      #     # Replace example.com with the hostname of the machine
-      #     # you're SSH-ing into
-      #     ssh-keyscan example.com >> /home/runner/.ssh/known_hosts
-      #     echo "${{ secrets.SSH_KEY }}" > /home/runner/.ssh/github_actions
-      #     chmod 600 /home/runner/.ssh/github_actions
-      #     ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
-      #     ssh-add /home/runner/.ssh/github_actions
 
       # - name: Deploy to EC2
       #   env:
@@ -94,10 +80,10 @@ jobs:
             echo $DOCKER_IMAGE
           
             # Pull the latest Docker image
-            docker pull $DOCKER_IMAGE
+            docker pull ghcr.io/lfgappeu/lfg-api:latest
             
             # Stop and remove any existing container
             docker rm -f lfg || true
             
             # Run the new container
-            docker run -d --name lfg -p 80:3000 $DOCKER_IMAGE
+            docker run -d --name lfg -p 80:3000 ghcr.io/lfgappeu/lfg-api:latest
