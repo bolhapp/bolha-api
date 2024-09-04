@@ -46,10 +46,10 @@ jobs:
 
       
       # Step 5: Set up SSH
-      # - name: Install SSH Key
-      #   uses: webfactory/ssh-agent@0.9.0
-      #   with:
-      #     ssh-private-key: ${{ secrets.SSH_KEY }}
+      - name: Install SSH Key
+        uses: webfactory/ssh-agent@0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
 
       # Step 6: Deploy Docker image to EC2
       - name: Deploy to EC2
@@ -59,10 +59,8 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
           DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
         run: |
-          echo $SSH_KEY > id_rsa
-          chmod 600 id_rsa
 
-          ssh -i id_rsa -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
             # Pull the latest Docker image
             docker pull $DOCKER_IMAGE
             
