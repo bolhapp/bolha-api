@@ -43,7 +43,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: lfg-api:latest
+          tags: ${{ env.DOCKER_IMAGE }}
 
 
       # - name: Deploy to EC2
@@ -77,8 +77,6 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            echo $DOCKER_IMAGE
-          
             # Pull the latest Docker image
             docker pull ghcr.io/lfgappeu/lfg-api:latest
             
