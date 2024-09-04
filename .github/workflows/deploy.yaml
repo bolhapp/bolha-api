@@ -77,20 +77,7 @@ jobs:
         env:
           KEY: ${{ env.SSH_KEY }}
         run: echo $KEY >> id_rsa
-        with:
-          host: $HOST
-          username: $USER
-          key: $KEY
-          script: |
-            # Pull the latest Docker image
-            docker pull $DOCKER_IMAGE
-            
-            # Stop and remove any existing container
-            docker rm -f lfg || true
-            
-            # Run the new container
-            docker run -d --name lfg -p 80:3000 $DOCKER_IMAGE
-      
+              
       - name: Deploy to my EC2 instance
         uses: appleboy/ssh-action@master
         env:
