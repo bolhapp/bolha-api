@@ -75,8 +75,8 @@ jobs:
 
       - name: Deploy to my EC2 instancedsa
         env:
-          HOST: ${{ secrets.EC2_HOST }}
-          USER: ${{ secrets.EC2_USER }}
+          HOST: ${{ env.EC2_HOST }}
+          USER: ${{ env.EC2_USER }}
         run: | 
           echo $HOST
           echo $USER
@@ -84,9 +84,9 @@ jobs:
       - name: Deploy to my EC2 instance
         uses: appleboy/ssh-action@master
         env:
-          HOST: ${{ secrets.EC2_HOST }}
-          USER: ${{ secrets.EC2_USER }}
-          KEY: ${{ secrets.SSH_KEY }}
+          HOST: ${{ env.EC2_HOST }}
+          USER: ${{ env.EC2_USER }}
+          KEY: ${{ env.SSH_KEY }}
         with:
           host: $HOST
           username: $USER
