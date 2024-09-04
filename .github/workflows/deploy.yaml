@@ -47,7 +47,7 @@ jobs:
       
       # Step 5: Set up SSH
       - name: Install SSH Key
-        uses: webfactory/ssh-agent
+        uses: webfactory/ssh-agent@latest
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
