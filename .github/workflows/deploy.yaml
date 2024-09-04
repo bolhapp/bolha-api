@@ -79,6 +79,7 @@ jobs:
           HOST: ${{ secrets.EC2_HOST }}
           USER: ${{ secrets.EC2_USER }}
           KEY: ${{ secrets.SSH_KEY }}
+        run: echo $HOST
         with:
           host: $HOST
           username: $USER
