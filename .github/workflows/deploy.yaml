@@ -77,6 +77,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            echo $DOCKER_IMAGE
+          
             # Pull the latest Docker image
             docker pull $DOCKER_IMAGE
             
