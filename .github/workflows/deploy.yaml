@@ -12,26 +12,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    environment: deploy
     env: 
       DOCKER_IMAGE: ghcr.io/${{ github.repository_owner }}/lfg:latest
 
     permissions: 
-      actions: write
-      attestations: write
-      checks: write
-      contents: write
-      deployments: write
-      discussions: write
-      id-token: write
-      issues: write
+      contents: read
       packages: write
-      pages: write
-      pull-requests: write
-      repository-projects: write
-      security-events: write
-      statuses: write
-      # contents: read
-      # packages: write
 
     steps:
       # Step 1: Checkout the code
