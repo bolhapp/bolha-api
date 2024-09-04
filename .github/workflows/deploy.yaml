@@ -63,6 +63,8 @@ jobs:
           chmod 600 id_rsa;
 
           ssh -i id_rsa -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+            pwd
+
             # Pull the latest Docker image
             docker pull $DOCKER_IMAGE
             
