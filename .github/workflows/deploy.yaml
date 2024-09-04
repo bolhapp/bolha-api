@@ -70,11 +70,12 @@ jobs:
 
       - name: Deploy to my EC2 instance
         uses: appleboy/ssh-action@master
+        env: 
+          DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
-          DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
           script: |
             # Pull the latest Docker image
             docker pull $DOCKER_IMAGE
