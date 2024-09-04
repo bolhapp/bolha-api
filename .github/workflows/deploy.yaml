@@ -68,41 +68,12 @@ jobs:
       #       docker run -d --name lfg -p 80:3000 $DOCKER_IMAGE
       #     EOF
 
-      - name: Check Secret Availability
-        run: |
-          if [ -z "${{ secrets.EC2_HOST }}" ]; then
-            echo "EC2_HOST is not set"
-          else
-            echo "EC2_HOST is set"
-          fi
-          
-          if [ -z "${{ secrets.EC2_USER }}" ]; then
-            echo "EC2_USER is not set"
-          else
-            echo "EC2_USER is set"
-          fi
-
-          if [ -z "${{ secrets.SSH_KEY }}" ]; then
-            echo "SSH_KEY is not set"
-          else
-            echo "SSH_KEY is set"
-          fi
-
-      - name: Print Environment Variables
-        run: |
-          echo "HOST is set to ${{ secrets.EC2_HOST }} ..."
-          echo "USER is set to ${{ secrets.EC2_USER }} ..."
-
       - name: Deploy to my EC2 instance
         uses: appleboy/ssh-action@master
-        env:
-          HOST: ${{ secrets.EC2_HOST }}
-          USER: ${{ secrets.EC2_USER }}
-          KEY: ${{ secrets.SSH_KEY }}
         with:
-          host: $HOST
-          username: $USER
-          key: $KEY
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_KEY }}
           script: |
             # Pull the latest Docker image
             docker pull $DOCKER_IMAGE
