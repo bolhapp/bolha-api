@@ -54,8 +54,8 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
           DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
         run: |
-          echo $SSH_KEY > "id_rsa";
-          chmod 600 id_rsa;
+          echo $SSH_KEY > id_rsa
+          chmod 600 id_rsa
 
           ssh -i id_rsa -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
             # Pull the latest Docker image
