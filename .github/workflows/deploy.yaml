@@ -73,13 +73,20 @@ jobs:
       #       docker run -d --name lfg -p 80:3000 $DOCKER_IMAGE
       #     EOF
 
+      - name: Deploy to my EC2 instancedsa
+        env:
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+        run: | 
+          echo $HOST
+          echo $USER
+      
       - name: Deploy to my EC2 instance
         uses: appleboy/ssh-action@master
         env:
           HOST: ${{ secrets.EC2_HOST }}
           USER: ${{ secrets.EC2_USER }}
           KEY: ${{ secrets.SSH_KEY }}
-        run: echo $HOST
         with:
           host: $HOST
           username: $USER
