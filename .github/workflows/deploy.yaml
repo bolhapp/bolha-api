@@ -73,13 +73,23 @@ jobs:
       #       docker run -d --name lfg -p 80:3000 $DOCKER_IMAGE
       #     EOF
 
-      - name: Deploy to my EC2 instancedsa
+      - name: Deploy to my EC2 instance
         env:
-          HOST: ${{ env.EC2_HOST }}
-          USER: ${{ env.EC2_USER }}
-        run: | 
-          echo $HOST
-          echo $USER
+          KEY: ${{ env.SSH_KEY }}
+        run: echo $KEY >> id_rsa
+        with:
+          host: $HOST
+          username: $USER
+          key: $KEY
+          script: |
+            # Pull the latest Docker image
+            docker pull $DOCKER_IMAGE
+            
+            # Stop and remove any existing container
+            docker rm -f lfg || true
+            
+            # Run the new container
+            docker run -d --name lfg -p 80:3000 $DOCKER_IMAGE
       
       - name: Deploy to my EC2 instance
         uses: appleboy/ssh-action@master
@@ -90,7 +100,7 @@ jobs:
         with:
           host: $HOST
           username: $USER
-          key: $KEY
+          key_path: ./id_rsa
           script: |
             # Pull the latest Docker image
             docker pull $DOCKER_IMAGE
