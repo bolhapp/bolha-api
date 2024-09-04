@@ -45,29 +45,7 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_IMAGE }}
 
-
-      # - name: Deploy to EC2
-      #   env:
-      #     SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-      #     EC2_HOST: ${{ secrets.EC2_HOST }}
-      #     EC2_USER: ${{ secrets.EC2_USER }}
-      #     SSH_KEY: ${{ env.SSH_KEY }}
-      #     DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
-      #   run: |
-      #     echo $SSH_KEY > id_rsa.pem
-      #     chmod 600 id_rsa.pem
-
-      #     ssh -i id_rsa.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
-      #       # Pull the latest Docker image
-      #       docker pull $DOCKER_IMAGE
-            
-      #       # Stop and remove any existing container
-      #       docker rm -f lfg || true
-            
-      #       # Run the new container
-      #       docker run -d --name lfg -p 80:3000 $DOCKER_IMAGE
-      #     EOF
-
+      # Step 5: Deploy to ec2
       - name: Deploy to my EC2 instance
         uses: appleboy/ssh-action@master
         env: 
@@ -77,11 +55,18 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            # Pull the latest Docker image
-            docker pull ghcr.io/lfgappeu/lfg-api:latest
-            
+            echo ${{ env.DOCKER_IMAGE }}
+            echo ${{ DOCKER_IMAGE }}
+            echo $DOCKER_IMAGE
+
             # Stop and remove any existing container
             docker rm -f lfg || true
-            
+
+            # Pull the latest Docker image
+            docker pull ghcr.io/lfgappeu/lfg-api:latest
+
             # Run the new container
             docker run -d --name lfg -p 80:3000 ghcr.io/lfgappeu/lfg-api:latest
+
+            # make sure container is running
+            docker ps --format '{{.Names}}' | grep -q "lfg" || { echo "Error: Container is not running."; exit 1; }

@@ -26,8 +26,9 @@ WORKDIR /usr/src/app
 
 # Copy only the necessary files from the build stage
 COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/dist/src .
+COPY --from=builder /usr/src/app/dist .
+COPY --from=builder /usr/src/app/package.json ./package.json
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
