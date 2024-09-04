@@ -15,7 +15,10 @@ jobs:
     env: 
       DOCKER_IMAGE: ghcr.io/${{ github.repository_owner }}/lfg:latest
 
-    permissions: "write-all"
+    permissions: 
+      contents: read
+      packages: write
+      actions: read
       # contents: read
       # packages: write
 
