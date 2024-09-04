@@ -38,12 +38,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Step 4: Build and Push Docker Image to GitHub Container Registry
-      # - name: Build and push Docker image
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     push: true
-      #     tags: ${{ env.DOCKER_IMAGE }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: lfg-api:latest
 
 
       # - name: Deploy to EC2
@@ -80,10 +80,10 @@ jobs:
             echo $DOCKER_IMAGE
           
             # Pull the latest Docker image
-            docker pull ghcr.io/lfgappeu/lfg:latest
+            docker pull ghcr.io/lfgappeu/lfg-api:latest
             
             # Stop and remove any existing container
             docker rm -f lfg || true
             
             # Run the new container
-            docker run -d --name lfg -p 80:3000 ghcr.io/lfgappeu/lfg:latest
+            docker run -d --name lfg -p 80:3000 ghcr.io/lfgappeu/lfg-api:latest
