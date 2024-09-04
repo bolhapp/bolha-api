@@ -47,38 +47,17 @@ jobs:
 
 
       # Step 6: Deploy Docker image to EC2
-      # - name: Deploy to EC2
-      #   env:
-      #     EC2_HOST: ${{ secrets.EC2_HOST }}
-      #     EC2_USER: ${{ secrets.EC2_USER }}
-      #     SSH_KEY: ${{ secrets.SSH_KEY }}
-      #     DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
-      #   run: |
-      #     echo $SSH_KEY > "id_rsa";
-      #     chmod 600 id_rsa;
-
-      #     ssh -i id_rsa -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
-      #       # Pull the latest Docker image
-      #       docker pull $DOCKER_IMAGE
-            
-      #       # Stop and remove any existing container
-      #       docker rm -f lfg || true
-            
-      #       # Run the new container
-      #       docker run -d --name lfg -p 80:3000 $DOCKER_IMAGE
-      #     EOF
-
-      - name: Deploy to my EC2 instance
-        uses: appleboy/ssh-action@master
-        env: 
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
           DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            echo $DOCKER_IMAGE
-          
+        run: |
+          echo $SSH_KEY > "id_rsa";
+          chmod 600 id_rsa;
+
+          ssh -i id_rsa -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
             # Pull the latest Docker image
             docker pull $DOCKER_IMAGE
             
@@ -87,3 +66,24 @@ jobs:
             
             # Run the new container
             docker run -d --name lfg -p 80:3000 $DOCKER_IMAGE
+          EOF
+
+      # - name: Deploy to my EC2 instance
+      #   uses: appleboy/ssh-action@master
+      #   env: 
+      #     DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
+      #   with:
+      #     host: ${{ secrets.EC2_HOST }}
+      #     username: ${{ secrets.EC2_USER }}
+      #     key: ${{ secrets.SSH_KEY }}
+      #     script: |
+      #       echo $DOCKER_IMAGE
+          
+      #       # Pull the latest Docker image
+      #       docker pull $DOCKER_IMAGE
+            
+      #       # Stop and remove any existing container
+      #       docker rm -f lfg || true
+            
+      #       # Run the new container
+      #       docker run -d --name lfg -p 80:3000 $DOCKER_IMAGE
