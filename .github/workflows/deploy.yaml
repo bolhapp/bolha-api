@@ -16,8 +16,6 @@ jobs:
       DOCKER_IMAGE: ghcr.io/${{ github.repository_owner }}/lfg:latest
 
     permissions: 
-
-      
       actions: write
       attestations: write
       checks: write
@@ -26,7 +24,6 @@ jobs:
       discussions: write
       id-token: write
       issues: write
-      metadata: write
       packages: write
       pages: write
       pull-requests: write
