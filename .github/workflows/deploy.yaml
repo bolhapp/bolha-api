@@ -55,7 +55,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            echo ${{ DOCKER_IMAGE }}
+            echo ${{ env.DOCKER_IMAGE }}
             echo $DOCKER_IMAGE
 
             # Stop and remove any existing container
