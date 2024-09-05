@@ -48,24 +48,22 @@ jobs:
       # Step 5: Deploy to ec2
       - name: Deploy to my EC2 instance
         uses: appleboy/ssh-action@master
-        env: 
-          DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            echo ${{ env.DOCKER_IMAGE }}
-            echo $DOCKER_IMAGE
+            # login to github registry
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
             # Stop and remove any existing container
             docker rm -f lfg || true
 
             # Pull the latest Docker image
-            docker pull ghcr.io/lfgappeu/lfg-api:latest
+            docker pull ${{ env.DOCKER_IMAGE }}
 
             # Run the new container
-            docker run -d --name lfg -p 80:3000 ghcr.io/lfgappeu/lfg-api:latest
+            docker run -d --name lfg -p 80:3000 ${{ env.DOCKER_IMAGE }}
 
             # make sure container is running
             docker ps --format '{{.Names}}' | grep -q "lfg" || { echo "Error: Container is not running."; exit 1; }
