@@ -29,6 +29,9 @@ COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist .
 COPY --from=builder /usr/src/app/package.json ./package.json
 
+# enable yarn 4
+RUN corepack enable && yarn set version stable
+
 EXPOSE 3000
 
 CMD ["yarn", "start"]
