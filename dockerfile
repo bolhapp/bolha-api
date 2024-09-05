@@ -1,7 +1,6 @@
-# Stage 1: Build Stage
-FROM node:22.7-alpine AS builder
+FROM node:22.7-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
 COPY ./src ./src 
 COPY ./.yarnrc.yml ./.yarnrc.yml 
@@ -18,19 +17,9 @@ RUN corepack enable && \
   yarn install && \
   yarn build
 
-# Stage 2: Production Stage
-FROM node:22.7-alpine
-
-# Set the working directory
-WORKDIR /usr/src/app
-
-# Copy only the necessary files from the build stage
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/dist .
-COPY --from=builder /usr/src/app/package.json ./package.json
-
-# enable yarn 4
-RUN corepack enable && yarn set version stable
+# todo split this into 2 stages so this is not needed
+RUN rm -rf src
+RUN mv dist/src/* .
 
 EXPOSE 3000
 
