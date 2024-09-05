@@ -55,7 +55,6 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            echo ${{ env.DOCKER_IMAGE }}
             echo ${{ DOCKER_IMAGE }}
             echo $DOCKER_IMAGE
 
