@@ -9,6 +9,29 @@ on:
       - master
 
 jobs:
+  migrations: 
+    runs-on: ubuntu-latest
+
+    environment: deploy
+
+    permissions: 
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Migrate
+        run: | 
+          # create ssh tunnel
+          ssh -i ${{ secrets.SSH_KEY }} -L ${{secrets.MIGRATION_URL}} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} -fN 
+
+          # run migration
+          npx drizzle-kit migrate
+
+          # close tunnel
+          pkill ssh
+
   deploy:
     runs-on: ubuntu-latest
 
