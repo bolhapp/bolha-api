@@ -55,6 +55,7 @@ jobs:
         with:
           context: .
           push: true
+          # todo: we should also build an image with the actual version for if we need to go back
           tags: ${{ env.DOCKER_IMAGE }}
 
       # Step 5: Deploy to ec2
@@ -75,6 +76,7 @@ jobs:
             docker pull ${{ env.DOCKER_IMAGE }}
 
             # Run the new container
+            ls
             cd /app
             docker run -d --name lfg -p 80:3000 --env-file env ${{ env.DOCKER_IMAGE }}
 
