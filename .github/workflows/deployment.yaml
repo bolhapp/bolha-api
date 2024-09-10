@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Deployment
 
 on:
   push:
@@ -75,7 +75,7 @@ jobs:
             docker pull ${{ env.DOCKER_IMAGE }}
 
             # Run the new container
-            docker run -d --name lfg -p 80:3000 --env-file env  ${{ env.DOCKER_IMAGE }}
+            docker run -d --name lfg -p 80:3000 --env-file /app/env  ${{ env.DOCKER_IMAGE }}
 
             # make sure container is running
             docker ps --format '{{.Names}}' | grep -q "lfg" || { echo "Error: Container is not running."; exit 1; }

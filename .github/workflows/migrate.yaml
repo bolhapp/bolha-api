@@ -44,6 +44,3 @@ jobs:
 
           # run migration
           npx drizzle-kit migrate
-
-          # close tunnel
-          pkill ssh
