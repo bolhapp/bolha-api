@@ -25,9 +25,10 @@ import type {
   BaseActivity,
   GetActivitiesQuery,
 } from "@/types/activity";
-import { deleteFile, uploadFile } from "@/services/firebase";
+import { deleteFile, uploadFile } from "@/services/aws";
 import { pageValidator, sortOrderValidator } from "@/utils/validators";
 import { createNotification } from "@/modules/notifications.module";
+import { buildImgUrl } from "@/utils";
 
 export const create = async (ctx: ParameterizedContext) => {
   const activity = getValidatedInput<BaseActivity>(ctx.request.body, {
@@ -66,6 +67,8 @@ export const create = async (ctx: ParameterizedContext) => {
     const urls = await Promise.all((ctx.files as File[]).map((f) => uploadFile(f, ctx.user!.id)));
 
     await updateActivity(newActivity.id, { pics: urls });
+
+    newActivity.pics = urls.map(buildImgUrl);
   }
 
   ctx.status = 201;
@@ -152,7 +155,7 @@ export const update = async (ctx: ParameterizedContext) => {
     throw new ValidationError(UNEXPECTED_ERROR);
   }
 
-  ctx.body = updated;
+  ctx.body = updated.pics ? { ...updated, pics: updated.pics.map(buildImgUrl) } : updated;
 };
 
 export const getAll = async (ctx: ParameterizedContext) => {
@@ -171,7 +174,15 @@ export const getAll = async (ctx: ParameterizedContext) => {
     difficulty: Joi.number(),
   });
 
-  ctx.body = await getActivities(payload);
+  const result = await getActivities(payload);
+
+  ctx.body = result.map((act) => {
+    if (act.pics) {
+      act.pics = act.pics.map(buildImgUrl);
+    }
+
+    return act;
+  });
 };
 
 export const signup = async (ctx: ParameterizedContext) => {
@@ -277,5 +288,11 @@ export const getPendingRequests = async (ctx: ParameterizedContext) => {
     throw new ValidationError(UNEXPECTED_ERROR);
   }
 
-  ctx.body = requests;
+  ctx.body = requests.map((r) => {
+    if (r.photo) {
+      r.photo = buildImgUrl(r.photo);
+    }
+
+    return r;
+  });
 };

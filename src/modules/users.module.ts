@@ -12,6 +12,7 @@ import { EMAIL_TAKEN } from "@/errors/auth.errors";
 import { INVALID_PARAMS } from "@/errors/index.errors";
 import { QueryParams } from "@/types/misc";
 import { getActivities } from "@/db/activity.db";
+import { buildImgUrl } from "@/utils";
 
 export const userDetails = async (ctx: ParameterizedContext) => {
   const { id } = getValidatedInput<{ id: string }>(ctx.params, {
@@ -24,6 +25,9 @@ export const userDetails = async (ctx: ParameterizedContext) => {
     throw new ValidationError(USER_NOT_FOUND);
   }
 
+  if (user.picUrl) {
+    user.picUrl = buildImgUrl(user.picUrl);
+  }
   ctx.body = user;
 };
 

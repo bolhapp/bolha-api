@@ -8,3 +8,5 @@ export const genToken = (length = 6) => {
 
   return token;
 };
+
+export const buildImgUrl = (url: string) => `${process.env.CDN_URL}/${url}`;
