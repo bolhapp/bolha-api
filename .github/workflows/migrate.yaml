@@ -5,12 +5,16 @@ on:
     branches:
       - master
     paths:
-        - src/db/migrations/**'
+        - "src/db/migrations/**"
+        - ".gitub/workflows/deployment.yaml"
+
   pull_request:
     branches:
       - master
     paths:
-        - src/db/migrations/**'
+        - "src/db/migrations/**"
+        - ".gitub/workflows/deployment.yaml"
+
 
 jobs:
   migration:
