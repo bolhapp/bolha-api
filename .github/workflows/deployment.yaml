@@ -9,7 +9,7 @@ on:
       - "dockerfile"
       - "package.json"
       - "yarn.lock"
-      - ".gitub/workflows/deployment.yaml"
+      - ".github/workflows/deployment.yaml"
   pull_request:
     branches:
       - master
@@ -18,7 +18,7 @@ on:
         - "dockerfile"
         - "package.json"
         - "yarn.lock"
-        - ".gitub/workflows/deployment.yaml"
+        - ".github/workflows/deployment.yaml"
 
 jobs:
   deploy:

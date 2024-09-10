@@ -6,14 +6,14 @@ on:
       - master
     paths:
         - "src/db/migrations/**"
-        - ".gitub/workflows/deployment.yaml"
+        - ".github/workflows/deployment.yaml"
 
   pull_request:
     branches:
       - master
     paths:
         - "src/db/migrations/**"
-        - ".gitub/workflows/deployment.yaml"
+        - ".github/workflows/deployment.yaml"
 
 
 jobs:
