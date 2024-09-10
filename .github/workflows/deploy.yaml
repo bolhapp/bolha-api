@@ -21,6 +21,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup deps
+        run: npm i dotenv drizzle-kit
+
       - name: Migrate
         run: | 
           echo "${{secrets.SSH_KEY}}" > key.pem
