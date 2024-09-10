@@ -8,5 +8,5 @@ export default (router: Router) => {
 
     .patch("/api/v1/me", users.editUser)
 
-    .get("/api/v1/me/activities", users.getOwnActivities);
+    .get("/api/v1/me/activities", users.getActivities);
 };

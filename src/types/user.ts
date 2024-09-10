@@ -1,3 +1,5 @@
+import { QueryParams } from "./misc";
+
 export type UserType = "user" | "admin";
 
 export type UserGender = "male" | "female" | "other" | "prefer_not_say";
@@ -39,4 +41,8 @@ export interface TokenUser {
 export interface AccountConfirmationPayload {
   email: string;
   token: string;
+}
+
+export interface GetOwnActivitiesPayload extends Omit<QueryParams, "query"> {
+  userId: string;
 }

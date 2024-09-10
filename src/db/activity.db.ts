@@ -1,4 +1,4 @@
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, eq, or, sql, not, gte } from "drizzle-orm";
 import { PgColumn } from "drizzle-orm/pg-core";
 
 import { db } from ".";
@@ -130,13 +130,8 @@ export const getActivities = async ({
   numParticipants,
   difficulty,
   userId,
-}: GetActivitiesQuery & { userId?: string }) => {
-  let conditions: any = [];
-
-  // get activities for a specific user
-  if (userId) {
-    conditions.push(eq(users.id, userId));
-  }
+}: GetActivitiesQuery & { userId: string }) => {
+  let conditions: any = [not(eq(users.id, userId)), gte(activities.date, new Date())];
 
   if (query) {
     // doing fuzzy search

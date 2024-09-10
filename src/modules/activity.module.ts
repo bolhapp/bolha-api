@@ -174,7 +174,7 @@ export const getAll = async (ctx: ParameterizedContext) => {
     difficulty: Joi.number(),
   });
 
-  const result = await getActivities(payload);
+  const result = await getActivities({ ...payload, userId: ctx.user!.id });
 
   ctx.body = result.map((act) => {
     if (act.pics) {

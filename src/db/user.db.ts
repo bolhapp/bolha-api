@@ -3,9 +3,19 @@ import { and, eq, sql } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 
 import { db } from ".";
+import { activities, activityCategories } from "./schemas/activities.schema";
 import { userInterests, users } from "./schemas/users.schema";
+import { userActivities } from "./schemas/userActivities.schema";
 import type { SelectUser } from "./schemas/users.schema";
-import type { User, UnregisteredUser, AccountConfirmationPayload } from "@/types/user";
+import type {
+  User,
+  UnregisteredUser,
+  AccountConfirmationPayload,
+  GetOwnActivitiesPayload,
+} from "@/types/user";
+import { getOrder } from "./utils";
+
+const PAGE_SIZE = 25;
 
 export const getUserForAuth = async (email: string) => {
   const result = await db
@@ -118,4 +128,63 @@ export const updateUser = async (email: string, payload: Partial<User>) => {
   });
 
   return result[0];
+};
+
+export const getOwnActivities = async ({
+  page,
+  sortField,
+  sortOrder,
+  userId,
+}: GetOwnActivitiesPayload) => {
+  const results = await db
+    .select({
+      id: activities.id,
+      name: activities.name,
+      createdAt: activities.createdAt,
+      description: activities.description,
+      date: activities.date,
+      online: activities.online,
+      address: activities.address,
+      numParticipants: activities.numParticipants,
+      maxParticipants: activities.maxParticipants,
+      difficulty: activities.difficulty,
+      restrictions: activities.restrictions,
+      extraDetails: activities.extraDetails,
+      updatedAt: activities.updatedAt,
+      pics: activities.pics,
+      host: sql`(
+        SELECT jsonb_build_object('id', ${users.id}, 'name', ${users.name}, 'photo', ${users.picUrl}) 
+        FROM users
+        WHERE ${users.id} = ${activities.createdBy}      
+      )`,
+      activityTypes: sql`ARRAY_AGG(DISTINCT(${activityCategories.activityTypeId}))`,
+      // groups users into the participants array
+      // CASE with FILTER to only return values of users that exist
+      // so we don't get a [{id: null, name: null}]
+      participants: sql`
+        ARRAY_AGG(
+          CASE 
+            WHEN ${users.id} IS NOT NULL AND ${userActivities.host} = false
+            THEN jsonb_build_object('id', ${users.id}, 'name', ${users.name}, 'photo', ${users.picUrl}) 
+            ELSE NULL 
+          END
+        ) 
+        FILTER (WHERE ${users.id} IS NOT NULL)
+      `,
+    })
+    .from(activities)
+    .groupBy(users.id, activities.id)
+    .leftJoin(
+      userActivities,
+      and(eq(activities.id, userActivities.activityId), eq(userActivities.host, false)),
+    )
+    .leftJoin(users, eq(userActivities.userId, users.id))
+    .leftJoin(activityCategories, eq(activityCategories.activityId, activities.id))
+    .where(eq(users.id, userId))
+    // @ts-expect-error TS complains about sortField being "any"
+    .orderBy(getOrder(sortOrder), activities[sortField])
+    .limit(PAGE_SIZE)
+    .offset(page * PAGE_SIZE);
+
+  return results;
 };
