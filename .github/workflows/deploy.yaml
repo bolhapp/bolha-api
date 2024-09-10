@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  migrations: 
+  migration:
     runs-on: ubuntu-latest
 
     environment: deploy
@@ -23,8 +23,10 @@ jobs:
 
       - name: Migrate
         run: | 
+          echo ${{ secrets.SSH_KEY }} >> key.pem
+
           # create ssh tunnel
-          ssh -i ${{ secrets.SSH_KEY }} -L ${{secrets.MIGRATION_URL}} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} -fN 
+          ssh -i key.pem -L ${{secrets.MIGRATION_URL}} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} -fN 
 
           # run migration
           npx drizzle-kit migrate
@@ -33,6 +35,7 @@ jobs:
           pkill ssh
 
   deploy:
+    needs: migration
     runs-on: ubuntu-latest
 
     environment: deploy
