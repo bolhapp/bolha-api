@@ -9,41 +9,6 @@ on:
       - master
 
 jobs:
-  migration:
-    on: 
-      paths:
-        - src/db/migrations/**'
-
-    runs-on: ubuntu-latest
-
-    environment: deploy
-
-    permissions: 
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup deps
-        run: npm i dotenv drizzle-kit
-
-      - name: Migrate
-        run: | 
-          echo "${{secrets.env}}" > .env
-          echo "${{secrets.SSH_KEY}}" > key.pem
-          chmod 600 key.pem
-          chmod 600 .env
-
-          # create ssh tunnel
-          ssh -i key.pem -o StrictHostKeyChecking=no -L ${{secrets.MIGRATION_URL}} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} -fN 
-
-          # run migration
-          npx drizzle-kit migrate
-
-          # close tunnel
-          pkill ssh
-
   deploy:
     needs: migration
     runs-on: ubuntu-latest
