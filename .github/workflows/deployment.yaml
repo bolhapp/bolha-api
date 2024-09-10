@@ -70,14 +70,14 @@ jobs:
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
             # Stop and remove any existing container
-            docker rm -f lfg || true
+            docker rm -f lfg-api || true
 
             # Pull the latest Docker image
             docker pull ${{ env.DOCKER_IMAGE }}
 
             # Run the new container
             cd app
-            docker run -d --name lfg -p 80:3000 --env-file env ${{ env.DOCKER_IMAGE }}
+            docker run -d --name lfg-api -p 80:3000 --env-file env ${{ env.DOCKER_IMAGE }}
 
             # make sure container is running
-            docker ps --format '{{.Names}}' | grep -q "lfg" || { echo "Error: Container is not running."; exit 1; }
+            docker ps --format '{{.Names}}' | grep -q "lfg-api" || { echo "Error: Container is not running."; exit 1; }
