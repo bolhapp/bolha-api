@@ -14,7 +14,7 @@ export const tokenValidator = (length: number = 33) => {
   return Joi.string()
     .required()
     .min(length + 1)
-    .pattern(new RegExp(`^[A-Za-z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]${length}-\d{5,}\$`));
+    .pattern(new RegExp(`^[A-Za-z0-9!@#$%^&*()_+{}[]:;<>,.?~\\/-]${length}-\\d{5,}$`));
 };
 
 export const pageValidator = Joi.number().min(0).required();
