@@ -10,7 +10,8 @@
     "db:ui": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "yarn db:generate && drizzle-kit migrate",
-    "db:drop-migration": "drizzle-kit drop"
+    "db:drop-migration": "drizzle-kit drop",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org lfg-2e --project api ./dist && sentry-cli sourcemaps upload --org lfg-2e --project api ./dist"
   },
   "engines": {
     "node": ">= 22.5.1"
@@ -23,6 +24,9 @@
     "@koa/cors": "^5.0.0",
     "@koa/multer": "^3.0.2",
     "@koa/router": "^12.0.1",
+    "@sentry/cli": "^2.36.1",
+    "@sentry/node": "^8.30.0",
+    "@sentry/profiling-node": "^8.30.0",
     "argon2": "^0.40.3",
     "dayjs": "^1.11.12",
     "drizzle-orm": "^0.32.2",

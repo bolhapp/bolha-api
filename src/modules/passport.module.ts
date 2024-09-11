@@ -5,13 +5,13 @@ import { getUser } from "@/db/user.db";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
 import { ValidationError } from "@/exceptions";
 import { UNAUTHENTICATED_ERROR } from "@/errors/auth.errors";
+import { logError } from "@/services/sentry";
 
 passport.serializeUser((user, done) => {
   try {
     done(null, JSON.stringify(user));
   } catch (err) {
-    // todo: log somewhere
-    console.error(err);
+    logError(err);
     done(err);
   }
 });
@@ -20,8 +20,7 @@ passport.deserializeUser((user: string, done) => {
   try {
     done(null, JSON.parse(user));
   } catch (err) {
-    // todo: log somewhere
-    console.error(err);
+    logError(err);
     done(err);
   }
 });
@@ -44,8 +43,10 @@ passport.use(
 
         done(null, user);
       } catch (err) {
-        console.error(err);
-        throw new ValidationError(UNEXPECTED_ERROR);
+        throw new ValidationError(UNEXPECTED_ERROR, {
+          message: "[passport.module]: failed to validate auth",
+          payload: err as any,
+        });
       }
     },
   ),

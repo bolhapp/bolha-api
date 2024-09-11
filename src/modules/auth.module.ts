@@ -74,7 +74,10 @@ export const register = async (ctx: ParameterizedContext) => {
   const newUser = await createUser(user, token);
 
   if (!newUser) {
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[auth.module]: failed to create user",
+      payload: user,
+    });
   }
 
   // TODO: disabled to be added at a later stage
@@ -112,7 +115,6 @@ export const registerConfirm = async (ctx: ParameterizedContext) => {
     dayjs.unix(Number(payload.token.split("-")[1])).isBefore(dayjs()) ||
     !(await verifyUser(payload))
   ) {
-    // throw new ValidationError(INVALID_TOKEN_PAYLOAD);
     ctx.status = 422;
     ctx.body = i18n.__("email.invalidToken");
     return;
@@ -176,7 +178,6 @@ export const resetPasswordConfirm = async (ctx: ParameterizedContext) => {
     dayjs.unix(Number(payload.token.split("-")[1])).isBefore(dayjs()) ||
     !(await verifyUser(payload))
   ) {
-    // throw new ValidationError(INVALID_ACC_CONFIRM_PAYLOAD);
     throw new ValidationError(INVALID_TOKEN_PAYLOAD);
   }
 

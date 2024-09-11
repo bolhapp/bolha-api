@@ -1,5 +1,7 @@
 import i18n from "i18n";
 
+import { logError } from "@/services/sentry";
+
 i18n.configure({
   locales: ["en", "pt"],
   directory: __dirname,
@@ -8,8 +10,7 @@ i18n.configure({
   header: "x-header-language",
   autoReload: process.env.NODE_ENV === "development",
   missingKeyFn: function (locale, value) {
-    // todo: log elsewhere
-    console.error(`missing translation for ${locale}:${value}`);
+    logError(`missing translation for ${locale}:${value}`);
     return value;
   },
   api: {

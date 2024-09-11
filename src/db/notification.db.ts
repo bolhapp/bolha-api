@@ -52,7 +52,7 @@ export const getNotifications = async (
 };
 
 export const addNotification = async (payload: BaseNotification) => {
-  await db.insert(notifications).values({ ...payload, read: false });
+  return await db.insert(notifications).values({ ...payload, read: false });
 };
 
 export const updateNotification = async (payload: UpdateNotificationPayload) => {

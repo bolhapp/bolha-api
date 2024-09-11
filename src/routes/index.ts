@@ -9,7 +9,10 @@ import addNotificationsRoutes from "./notifications.route";
 const router = new Router();
 
 router
-  .get("/api/v1/health", (ctx) => (ctx.body = "OK"))
+  .get("/api/v1/health", (ctx) => {
+    throw new Error("snetry check");
+    ctx.body = "OK";
+  })
 
   // todo: version should be in sync with package.json
   .get("/api/v1/version", (ctx) => (ctx.body = { minVersion: 1, version: 1 }));

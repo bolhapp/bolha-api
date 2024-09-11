@@ -14,3 +14,5 @@ yarn-error.log*
 
 tmp
 serviceAccount.json
+# Sentry Config File
+.sentryclirc

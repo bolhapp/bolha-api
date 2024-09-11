@@ -32,17 +32,14 @@ export const uploadFile = async (file: File, id: string) => {
 
     return filename;
   } catch (error) {
-    // todo: log to somewhere
-    console.log(error);
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, error as any);
   }
 };
 
 export const deleteFile = async (file: string) => {
   try {
     await s3Client.send(new DeleteObjectCommand({ Bucket: "lfg-cdn", Key: file }));
-  } catch (error: any) {
-    console.log(error);
-    throw new ValidationError(UNEXPECTED_ERROR);
+  } catch (error) {
+    throw new ValidationError(UNEXPECTED_ERROR, error as any);
   }
 };

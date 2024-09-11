@@ -1,3 +1,5 @@
+import Sentry from "./services/sentry";
+
 import Koa from "koa";
 import bodyParser from "@koa/bodyparser";
 import helmet from "koa-helmet";
@@ -8,14 +10,16 @@ import { config } from "dotenv";
 
 config();
 
+const app = new Koa();
+
+Sentry.setupKoaErrorHandler(app);
+
 import "./db";
 
 import passport from "./modules/passport.module";
 import router from "./routes/index";
 import errorHandler from "./middleware/error";
 import { authenticated } from "./middleware/authentication";
-
-const app = new Koa();
 
 app
 

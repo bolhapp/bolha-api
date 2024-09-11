@@ -48,7 +48,10 @@ export const update = async (ctx: ParameterizedContext) => {
   const updated = await updateNotification(request);
 
   if (!updated) {
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[notifications.module]: failed to update notification",
+      payload: request,
+    });
   }
 
   ctx.status = 200;
@@ -67,5 +70,11 @@ export const remove = async (ctx: ParameterizedContext) => {
 export const createNotification = async (notif: BaseNotification) => {
   const notification = await addNotification(notif);
 
+  if (!notification) {
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[notification.module]: failed to create notification",
+      payload: notification,
+    });
+  }
   // todo: fire notification
 };

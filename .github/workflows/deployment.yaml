@@ -58,7 +58,10 @@ jobs:
           # todo: we should also build an image with the actual version for if we need to go back
           tags: ${{ env.DOCKER_IMAGE }}
 
-      # Step 5: Deploy to ec2
+
+      # add step 5 to deploy sourcemaps to sentry (run image yarn sentry:sourcemaps)
+
+      # Step 6: Deploy to ec2
       - name: Deploy to my EC2 instance
         uses: appleboy/ssh-action@master
         with:
@@ -81,3 +84,5 @@ jobs:
 
             # make sure container is running
             docker ps --format '{{.Names}}' | grep -q "lfg-api" || { echo "Error: Container is not running."; exit 1; }
+
+    

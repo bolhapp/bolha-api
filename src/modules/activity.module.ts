@@ -59,7 +59,10 @@ export const create = async (ctx: ParameterizedContext) => {
   const newActivity = await createActivity(ctx.user!.id, activity);
 
   if (!newActivity) {
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[activity.module] failed to create activity",
+      payload: activity,
+    });
   }
 
   // upload pics if they exist
@@ -83,7 +86,10 @@ export const remove = async (ctx: ParameterizedContext) => {
   const pics = await deleteActivity(request.id, ctx.user!.id);
 
   if (!pics) {
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[activity.module] failed to delete pics when deleting activity",
+      payload: { activityId: request.id },
+    });
   }
 
   // delete any files that may exist
@@ -152,7 +158,10 @@ export const update = async (ctx: ParameterizedContext) => {
   const updated = await updateActivity(ctx.params.id, activity, ctx.user!.id);
 
   if (!updated) {
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[activity.module]: failed to update activity",
+      payload: { ...activity, activityId: ctx.params.id },
+    });
   }
 
   ctx.body = updated.pics ? { ...updated, pics: updated.pics.map(buildImgUrl) } : updated;
@@ -191,13 +200,19 @@ export const signup = async (ctx: ParameterizedContext) => {
   const newRequest = await createActivityRequest(ctx.user!.id, request.id);
 
   if (!newRequest) {
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[activity.module]: failed to signup to activity",
+      payload: { activityId: request.id },
+    });
   }
 
   const activity = await getActivity<{ createdBy: string }>(request.id, [], ["createdBy"]);
 
   if (!activity) {
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[activity.module]: activity not found",
+      payload: { activityId: request.id },
+    });
   }
 
   await createNotification({ userId: activity.createdBy, type: "newRequest", payload: newRequest });
@@ -230,7 +245,10 @@ export const reply = async (ctx: ParameterizedContext) => {
   );
 
   if (!updatedRequest) {
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[activity.module]: failed to reply to activity",
+      payload: request,
+    });
   }
 
   await createNotification({
@@ -259,13 +277,19 @@ export const leave = async (ctx: ParameterizedContext) => {
   }
 
   if (!result) {
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[activity.module]: failed to leave activity",
+      payload: request,
+    });
   }
 
   const activity = await getActivity<{ createdBy: string }>(request.id, [], ["createdBy"]);
 
   if (!activity) {
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[activity.module]: failed to get activity",
+      payload: { activityId: request.id },
+    });
   }
 
   await createNotification({ userId: activity.createdBy, type: "userLeft", payload: result });
@@ -285,7 +309,10 @@ export const getPendingRequests = async (ctx: ParameterizedContext) => {
   const requests = await getActivityRequests(payload.id, payload.page);
 
   if (!requests) {
-    throw new ValidationError(UNEXPECTED_ERROR);
+    throw new ValidationError(UNEXPECTED_ERROR, {
+      message: "[activity.module]: failed to signup pending requests",
+      payload: payload,
+    });
   }
 
   ctx.body = requests.map((r) => {

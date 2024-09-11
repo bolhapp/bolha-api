@@ -1,3 +1,5 @@
+import { logError } from "./services/sentry";
+
 export interface ErrorField {
   field: string;
   error: string;
@@ -10,13 +12,21 @@ export interface ValidationErrorPayload {
   readonly errorCode?: number;
 }
 
+export interface ErrorPayload {
+  message?: string;
+  payload?: Record<string, any>;
+}
+
 export class ValidationError extends Error {
   readonly errors?: ErrorField[];
   readonly statusCode: number = 500;
   readonly statusMessage: string = "unexpected_error";
   readonly errorCode?: number;
 
-  constructor({ errors, statusCode, statusMessage, errorCode }: ValidationErrorPayload) {
+  constructor(
+    { errors, statusCode, statusMessage, errorCode }: ValidationErrorPayload,
+    error?: ErrorPayload,
+  ) {
     super("Validation error");
 
     if (errors) {
@@ -35,8 +45,8 @@ export class ValidationError extends Error {
       this.errorCode = errorCode;
     }
 
-    if (process.env.NODE_ENV === "development") {
-      console.trace(errors, statusCode, statusMessage);
-    }
+    logError(`SwValidation: ${statusMessage}`, {
+      extra: { validationPayload: { errors, statusCode, statusMessage, errorCode }, error },
+    });
   }
 }

@@ -1,5 +1,6 @@
 import type { Middleware } from "koa";
 
+import { logError } from "@/services/sentry";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
 import { ValidationError } from "@/exceptions";
 
@@ -14,8 +15,7 @@ export default function (): Middleware {
         return;
       }
 
-      //todo: log to wherever
-      console.trace(error);
+      logError(error);
       ctx.status = 500;
       ctx.body = UNEXPECTED_ERROR;
     }
