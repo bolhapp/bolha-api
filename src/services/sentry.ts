@@ -1,9 +1,9 @@
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
-const env = process.env.NODE_ENV;
+import { version } from "../../package.json";
 
-const version = 1;
+const env = process.env.NODE_ENV;
 
 // Ensure to call this before importing any other modules!
 Sentry.init({

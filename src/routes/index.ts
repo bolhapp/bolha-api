@@ -1,5 +1,7 @@
 import Router from "@koa/router";
 
+import { version } from "../../package.json";
+
 import addAuthRoutes from "./auth.route";
 import addActivtyTypesRoutes from "./activityTypes.route";
 import addUsersRoutes from "./users.route";
@@ -11,8 +13,7 @@ const router = new Router();
 router
   .get("/api/v1/health", (ctx) => (ctx.body = "OK"))
 
-  // todo: version should be in sync with package.json
-  .get("/api/v1/version", (ctx) => (ctx.body = { minVersion: 1, version: 1 }));
+  .get("/api/v1/version", (ctx) => (ctx.body = { minVersion: 1, version: parseFloat(version) }));
 
 addAuthRoutes(router);
 addActivtyTypesRoutes(router);
