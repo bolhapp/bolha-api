@@ -68,15 +68,6 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
-          PORT: ${{ secrets.DOCKER_PORT }}
-          NODE_ENV: ${{ secrets.DOCKER_NODE_ENV }}
-          APP_BASE_URL: ${{ secrets.DOCKER_APP_BASE_URL }}
-          POSTGRES_URL: ${{ secrets.DOCKER_POSTGRES_URL }}
-          FIREBASE_API_KEY: ${{ secrets.DOCKER_FIREBASE_API_KEY }}
-          JWT_SECRET: ${{ secrets.DOCKER_JWT_SECRET }}
-          BREVO_API_KEY: ${{ secrets.DOCKER_BREVO_API_KEY }}
-          USER_ACTION_REQUIRED_TEMPLATE_ID: ${{ secrets.DOCKER_USER_ACTION_REQUIRED_TEMPLATE_ID }}
-          INFORMATION_TEMPLATE_ID: ${{ secrets.DOCKER_INFORMATION_TEMPLATE_ID }}
           script: |
             # login to github registry
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
@@ -87,15 +78,15 @@ jobs:
             # Update env file
             rm env
             touch /app/env
-            echo "PORT='${{ env.PORT }}'" >> /app/env
-            echo "NODE_ENV='${{ env.NODE_ENV }}'" >> /app/env
-            echo "APP_BASE_URL='${{ env.APP_BASE_URL }}'" >> /app/env
-            echo "POSTGRES_URL='${{ env.POSTGRES_URL }}'" >> /app/env
-            echo "FIREBASE_API_KEY='${{ env.FIREBASE_API_KEY }}'" >> /app/env
-            echo "JWT_SECRET='${{ env.JWT_SECRET }}'" >> /app/env
-            echo "BREVO_API_KEY='${{ env.BREVO_API_KEY }}'" >> /app/env
-            echo "USER_ACTION_REQUIRED_TEMPLATE_ID='${{ env.USER_ACTION_REQUIRED_TEMPLATE_ID }}'" >> /app/env
-            echo "INFORMATION_TEMPLATE_ID='${{ env.INFORMATION_TEMPLATE_ID }}'" >> /app/env
+            echo "PORT='${{ secrets.PORT }}'" >> /app/env
+            echo "NODE_ENV='${{ secrets.NODE_ENV }}'" >> /app/env
+            echo "APP_BASE_URL='${{ secrets.APP_BASE_URL }}'" >> /app/env
+            echo "POSTGRES_URL='${{ secrets.POSTGRES_URL }}'" >> /app/env
+            echo "FIREBASE_API_KEY='${{ secrets.FIREBASE_API_KEY }}'" >> /app/env
+            echo "JWT_SECRET='${{ secrets.JWT_SECRET }}'" >> /app/env
+            echo "BREVO_API_KEY='${{ secrets.BREVO_API_KEY }}'" >> /app/env
+            echo "USER_ACTION_REQUIRED_TEMPLATE_ID='${{ secrets.USER_ACTION_REQUIRED_TEMPLATE_ID }}'" >> /app/env
+            echo "INFORMATION_TEMPLATE_ID='${{ secrets.INFORMATION_TEMPLATE_ID }}'" >> /app/env
 
             # run container
             docker-compose up -d
