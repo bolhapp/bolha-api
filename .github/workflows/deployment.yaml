@@ -78,7 +78,6 @@ jobs:
             # Update env file
             cd app
             rm env
-            touch env
             echo "PORT='${{ secrets.PORT }}'" >> env
             echo "NODE_ENV='${{ secrets.NODE_ENV }}'" >> env
             echo "APP_BASE_URL='${{ secrets.APP_BASE_URL }}'" >> env
