@@ -1,6 +1,7 @@
 name: DB Migration
 
 on:
+  workflow_dispatch: # to allow manual triggering
   push:
     branches:
       - master
