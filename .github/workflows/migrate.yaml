@@ -34,7 +34,7 @@ jobs:
 
       - name: Migrate
         run: | 
-          echo "${{secrets.env}}" > .env
+          echo "POSTGRES_URL=${{secrets.DOCKER_POSTGRES_URL}}" > .env
           echo "${{secrets.SSH_KEY}}" > key.pem
           chmod 600 key.pem
           chmod 600 .env
