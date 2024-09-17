@@ -78,15 +78,15 @@ jobs:
             # Update env file
             cd app
             rm env
-            echo "PORT='${{ secrets.PORT }}'" >> env
-            echo "NODE_ENV='${{ secrets.NODE_ENV }}'" >> env
-            echo "APP_BASE_URL='${{ secrets.APP_BASE_URL }}'" >> env
-            echo "POSTGRES_URL='${{ secrets.POSTGRES_URL }}'" >> env
-            echo "FIREBASE_API_KEY='${{ secrets.FIREBASE_API_KEY }}'" >> env
-            echo "JWT_SECRET='${{ secrets.JWT_SECRET }}'" >> env
-            echo "BREVO_API_KEY='${{ secrets.BREVO_API_KEY }}'" >> env
-            echo "USER_ACTION_REQUIRED_TEMPLATE_ID='${{ secrets.USER_ACTION_REQUIRED_TEMPLATE_ID }}'" >> env
-            echo "INFORMATION_TEMPLATE_ID='${{ secrets.INFORMATION_TEMPLATE_ID }}'" >> env
+            echo "PORT='${{ secrets.DOCKER_PORT }}'" >> env
+            echo "NODE_ENV='${{ secrets.DOCKER_NODE_ENV }}'" >> env
+            echo "APP_BASE_URL='${{ secrets.DOCKER_APP_BASE_URL }}'" >> env
+            echo "POSTGRES_URL='${{ secrets.DOCKER_POSTGRES_URL }}'" >> env
+            echo "FIREBASE_API_KEY='${{ secrets.DOCKER_FIREBASE_API_KEY }}'" >> env
+            echo "JWT_SECRET='${{ secrets.DOCKER_JWT_SECRET }}'" >> env
+            echo "BREVO_API_KEY='${{ secrets.DOCKER_BREVO_API_KEY }}'" >> env
+            echo "USER_ACTION_REQUIRED_TEMPLATE_ID='${{ secrets.DOCKER_USER_ACTION_REQUIRED_TEMPLATE_ID }}'" >> env
+            echo "INFORMATION_TEMPLATE_ID='${{ secrets.DOCKER_INFORMATION_TEMPLATE_ID }}'" >> env
 
             # run container
             docker-compose up -d
