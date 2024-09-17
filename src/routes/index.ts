@@ -1,6 +1,6 @@
 import Router from "@koa/router";
 
-import { version } from "../../package.json";
+import { version } from "root/package.json";
 
 import addAuthRoutes from "./auth.route";
 import addActivtyTypesRoutes from "./activityTypes.route";
