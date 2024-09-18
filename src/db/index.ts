@@ -12,12 +12,20 @@ if (!url) {
   throw Error("POSTGRES_URL not defined!");
 }
 
-export const db = drizzle(postgres(url), {
-  logger: true,
-  schema: {
-    ...activitySchemas,
-    ...userSchemas,
-    ...userActivitySchemas,
-    ...activityTypeSchemas,
+export const db = drizzle(
+  postgres(url, {
+    ssl:
+      process.env.NODE_ENV !== "development"
+        ? { rejectUnauthorized: true, ca: process.env.DB_CA }
+        : false,
+  }),
+  {
+    logger: true,
+    schema: {
+      ...activitySchemas,
+      ...userSchemas,
+      ...userActivitySchemas,
+      ...activityTypeSchemas,
+    },
   },
-});
+);
