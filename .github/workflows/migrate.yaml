@@ -29,6 +29,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: deps
+        run: npm install dotenv
+
       - name: Migrate
         run: | 
           export POSTGRES_URL=${{secrets.DOCKER_POSTGRES_URL}}

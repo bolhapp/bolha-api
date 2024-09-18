@@ -15,9 +15,6 @@ export default {
   dialect: "postgresql",
   dbCredentials: {
     url: postgresUrl,
-    ssl: {
-      rejectUnauthorized: true,
-      ca: process.env.DB_CA,
-    },
+    ssl: { rejectUnauthorized: true, ca: process.env.DB_CA },
   },
 } satisfies Config;
