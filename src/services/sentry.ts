@@ -20,4 +20,6 @@ if (env !== "development") {
 
 export const logError = Sentry.captureException;
 
+export const logMessage = Sentry.captureMessage;
+
 export default Sentry;

@@ -6,10 +6,10 @@ import { emailValidator, pageValidator, sortOrderValidator } from "@/utils/valid
 import { getValidatedInput } from "@/utils/request";
 import type { GetOwnActivitiesPayload, User } from "@/types/user";
 import { USER_GENDER } from "@/db/schemas/users.schema";
-import { ValidationError } from "@/exceptions";
+import { ValidationError, LfgError } from "@/exceptions";
 import { USER_NOT_FOUND } from "@/errors/user.errors";
 import { EMAIL_TAKEN } from "@/errors/auth.errors";
-import { INVALID_PARAMS, UNEXPECTED_ERROR } from "@/errors/index.errors";
+import { INVALID_PARAMS } from "@/errors/index.errors";
 import { buildImgUrl } from "@/utils";
 
 export const userDetails = async (ctx: ParameterizedContext) => {
@@ -59,10 +59,7 @@ export const editUser = async (ctx: ParameterizedContext) => {
   const updated = await updateUser(ctx.user!.email, payload);
 
   if (!updated) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[user.module]: failed to update user",
-      payload: payload,
-    });
+    throw new LfgError("[user.module]: failed to update user", payload);
   }
 
   ctx.body = updated;

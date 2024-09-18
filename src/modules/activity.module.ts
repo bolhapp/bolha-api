@@ -3,8 +3,7 @@ import { File } from "@koa/multer";
 import type { ParameterizedContext } from "koa";
 
 import { getValidatedInput } from "@/utils/request";
-import { ValidationError } from "@/exceptions";
-import { UNEXPECTED_ERROR } from "@/errors/index.errors";
+import { LfgError } from "@/exceptions";
 import {
   createActivity,
   deleteActivity,
@@ -59,10 +58,7 @@ export const create = async (ctx: ParameterizedContext) => {
   const newActivity = await createActivity(ctx.user!.id, activity);
 
   if (!newActivity) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[activity.module] failed to create activity",
-      payload: activity,
-    });
+    throw new LfgError("[activity.module] failed to create activity", activity);
   }
 
   // upload pics if they exist
@@ -86,9 +82,8 @@ export const remove = async (ctx: ParameterizedContext) => {
   const pics = await deleteActivity(request.id, ctx.user!.id);
 
   if (!pics) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[activity.module] failed to delete pics when deleting activity",
-      payload: { activityId: request.id },
+    throw new LfgError("[activity.module] failed to delete pics when deleting activity", {
+      activityId: request.id,
     });
   }
 
@@ -158,9 +153,9 @@ export const update = async (ctx: ParameterizedContext) => {
   const updated = await updateActivity(ctx.params.id, activity, ctx.user!.id);
 
   if (!updated) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[activity.module]: failed to update activity",
-      payload: { ...activity, activityId: ctx.params.id },
+    throw new LfgError("[activity.module]: failed to update activity", {
+      ...activity,
+      activityId: ctx.params.id,
     });
   }
 
@@ -200,19 +195,15 @@ export const signup = async (ctx: ParameterizedContext) => {
   const newRequest = await createActivityRequest(ctx.user!.id, request.id);
 
   if (!newRequest) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[activity.module]: failed to signup to activity",
-      payload: { activityId: request.id },
+    throw new LfgError("[activity.module]: failed to signup to activity", {
+      activityId: request.id,
     });
   }
 
   const activity = await getActivity<{ createdBy: string }>(request.id, [], ["createdBy"]);
 
   if (!activity) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[activity.module]: activity not found",
-      payload: { activityId: request.id },
-    });
+    throw new LfgError("[activity.module]: activity not found", { activityId: request.id });
   }
 
   await createNotification({ userId: activity.createdBy, type: "newRequest", payload: newRequest });
@@ -245,10 +236,7 @@ export const reply = async (ctx: ParameterizedContext) => {
   );
 
   if (!updatedRequest) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[activity.module]: failed to reply to activity",
-      payload: request,
-    });
+    throw new LfgError("[activity.module]: failed to reply to activity", request);
   }
 
   await createNotification({
@@ -277,19 +265,13 @@ export const leave = async (ctx: ParameterizedContext) => {
   }
 
   if (!result) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[activity.module]: failed to leave activity",
-      payload: request,
-    });
+    throw new LfgError("[activity.module]: failed to leave activity", request);
   }
 
   const activity = await getActivity<{ createdBy: string }>(request.id, [], ["createdBy"]);
 
   if (!activity) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[activity.module]: failed to get activity",
-      payload: { activityId: request.id },
-    });
+    throw new LfgError("[activity.module]: failed to get activity", { activityId: request.id });
   }
 
   await createNotification({ userId: activity.createdBy, type: "userLeft", payload: result });
@@ -309,10 +291,7 @@ export const getPendingRequests = async (ctx: ParameterizedContext) => {
   const requests = await getActivityRequests(payload.id, payload.page);
 
   if (!requests) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[activity.module]: failed to signup pending requests",
-      payload: payload,
-    });
+    throw new LfgError("[activity.module]: failed to signup pending requests", payload);
   }
 
   ctx.body = requests.map((r) => {

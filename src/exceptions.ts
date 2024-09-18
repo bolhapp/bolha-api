@@ -1,4 +1,4 @@
-import { logError } from "./services/sentry";
+import { logError, logMessage } from "./services/sentry";
 
 export interface ErrorField {
   field: string;
@@ -45,8 +45,18 @@ export class ValidationError extends Error {
       this.errorCode = errorCode;
     }
 
-    logError(`SwValidation: ${statusMessage}`, {
+    // not fully sure whether we actually wanna log this to sentry
+    logMessage(`[SwValidation]: ${statusMessage}`, {
+      level: "debug",
       extra: { validationPayload: { errors, statusCode, statusMessage, errorCode }, error },
     });
+  }
+}
+
+export class LfgError extends Error {
+  constructor(message: string, payload?: Record<string, any>) {
+    super("Unexpected error");
+
+    logError(message, { extra: { payload } });
   }
 }

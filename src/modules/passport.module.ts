@@ -2,8 +2,7 @@ import passport from "koa-passport";
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 
 import { getUser } from "@/db/user.db";
-import { UNEXPECTED_ERROR } from "@/errors/index.errors";
-import { ValidationError } from "@/exceptions";
+import { LfgError } from "@/exceptions";
 import { UNAUTHENTICATED_ERROR } from "@/errors/auth.errors";
 import { logError } from "@/services/sentry";
 
@@ -42,11 +41,8 @@ passport.use(
         }
 
         done(null, user);
-      } catch (err) {
-        throw new ValidationError(UNEXPECTED_ERROR, {
-          message: "[passport.module]: failed to validate auth",
-          payload: err as any,
-        });
+      } catch (err: any) {
+        throw new LfgError("[passport.module]: failed to validate auth", err);
       }
     },
   ),

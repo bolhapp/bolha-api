@@ -4,11 +4,10 @@ import dayjs from "dayjs";
 
 import { createUser, getUser, getUserForAuth, userExists, verifyUser } from "@/db/user.db";
 import { getValidatedInput, sanitizeInput } from "@/utils/request";
-import { ValidationError } from "@/exceptions";
+import { ValidationError, LfgError } from "@/exceptions";
 import { EMAIL_TAKEN, INVALID_TOKEN_PAYLOAD, NOT_VERIFIED } from "@/errors/auth.errors";
 import { INVALID_PARAMS } from "@/errors/index.errors";
 import type { AccountConfirmationPayload, UnregisteredUser } from "@/types/user";
-import { UNEXPECTED_ERROR } from "@/errors/index.errors";
 import { genToken } from "@/utils";
 import { emailValidator, passwordValidator, tokenValidator } from "@/utils/validators";
 import { sendEmail } from "@/services/email";
@@ -74,10 +73,7 @@ export const register = async (ctx: ParameterizedContext) => {
   const newUser = await createUser(user, token);
 
   if (!newUser) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[auth.module]: failed to create user",
-      payload: user,
-    });
+    throw new LfgError("[auth.module]: failed to create user", user);
   }
 
   // TODO: disabled to be added at a later stage

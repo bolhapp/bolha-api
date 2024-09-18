@@ -1,11 +1,9 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
-
 import type { File } from "@koa/multer";
 import sharp from "sharp";
 import { unlinkSync } from "fs";
 
-import { ValidationError } from "@/exceptions";
-import { UNEXPECTED_ERROR } from "@/errors/index.errors";
+import { LfgError } from "@/exceptions";
 
 const s3Client = new S3Client({ region: "eu-west-3" });
 
@@ -31,15 +29,15 @@ export const uploadFile = async (file: File, id: string) => {
     unlinkSync(file.path);
 
     return filename;
-  } catch (error) {
-    throw new ValidationError(UNEXPECTED_ERROR, error as any);
+  } catch (error: any) {
+    throw new LfgError("[aws]: failed to upload file", error);
   }
 };
 
 export const deleteFile = async (file: string) => {
   try {
     await s3Client.send(new DeleteObjectCommand({ Bucket: "lfg-cdn", Key: file }));
-  } catch (error) {
-    throw new ValidationError(UNEXPECTED_ERROR, error as any);
+  } catch (error: any) {
+    throw new LfgError("[aws]: failed to delete file", error);
   }
 };

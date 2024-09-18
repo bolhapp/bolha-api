@@ -2,8 +2,8 @@ import Joi from "joi";
 import type { ParameterizedContext } from "koa";
 
 import { getValidatedInput } from "@/utils/request";
-import { ValidationError } from "@/exceptions";
-import { NOT_FOUND, UNEXPECTED_ERROR } from "@/errors/index.errors";
+import { ValidationError, LfgError } from "@/exceptions";
+import { NOT_FOUND } from "@/errors/index.errors";
 import type { QueryParams } from "@/types/misc";
 import { pageValidator, sortOrderValidator } from "@/utils/validators";
 import {
@@ -48,10 +48,7 @@ export const update = async (ctx: ParameterizedContext) => {
   const updated = await updateNotification(request);
 
   if (!updated) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[notifications.module]: failed to update notification",
-      payload: request,
-    });
+    throw new LfgError("[notifications.module]: failed to update notification", request);
   }
 
   ctx.status = 200;
@@ -71,10 +68,7 @@ export const createNotification = async (notif: BaseNotification) => {
   const notification = await addNotification(notif);
 
   if (!notification) {
-    throw new ValidationError(UNEXPECTED_ERROR, {
-      message: "[notification.module]: failed to create notification",
-      payload: notification,
-    });
+    throw new LfgError("[notification.module]: failed to create notification", notification);
   }
   // todo: fire notification
 };
