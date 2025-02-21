@@ -33,8 +33,8 @@ export const sendEmail = async (
   mailer.templateId = TEMPLATE_NAME_TO_ID[template];
   mailer.params = data;
   mailer.sender = {
-    name: "LFG App",
-    email: "noreply@lfgapp.eu",
+    name: "Bolha",
+    email: "noreply@bolha.pt",
   };
 
   const api = new TransactionalEmailsApi();

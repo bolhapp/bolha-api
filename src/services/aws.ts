@@ -3,7 +3,7 @@ import type { File } from "@koa/multer";
 import sharp from "sharp";
 import { unlinkSync } from "fs";
 
-import { LfgError } from "@/exceptions";
+import { BolhaError } from "@/exceptions";
 
 const s3Client = new S3Client({ region: "eu-west-3" });
 
@@ -17,7 +17,7 @@ export const uploadFile = async (file: File, id: string) => {
 
     await s3Client.send(
       new PutObjectCommand({
-        Bucket: "lfg-cdn",
+        Bucket: "bolha-cdn",
         ACL: "public-read",
         ContentType: "image/webp",
         Key: filename,
@@ -30,14 +30,14 @@ export const uploadFile = async (file: File, id: string) => {
 
     return filename;
   } catch (error: any) {
-    throw new LfgError("[aws]: failed to upload file", error);
+    throw new BolhaError("[aws]: failed to upload file", error);
   }
 };
 
 export const deleteFile = async (file: string) => {
   try {
-    await s3Client.send(new DeleteObjectCommand({ Bucket: "lfg-cdn", Key: file }));
+    await s3Client.send(new DeleteObjectCommand({ Bucket: "bolha-cdn", Key: file }));
   } catch (error: any) {
-    throw new LfgError("[aws]: failed to delete file", error);
+    throw new BolhaError("[aws]: failed to delete file", error);
   }
 };

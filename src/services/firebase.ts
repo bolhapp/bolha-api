@@ -42,7 +42,7 @@
 //       throw new ValidationError(UNAUTHENTICATED_ERROR);
 //     }
 
-//     throw new LfgError(UNEXPECTED_ERROR);
+//     throw new BolhaError(UNEXPECTED_ERROR);
 //   }
 // };
 
@@ -76,6 +76,6 @@
 //       throw new ValidationError(UNAUTHENTICATED_ERROR);
 //     }
 
-//     throw new LfgError(UNEXPECTED_ERROR);
+//     throw new BolhaError(UNEXPECTED_ERROR);
 //   }
 // };

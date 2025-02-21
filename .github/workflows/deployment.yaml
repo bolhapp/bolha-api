@@ -27,7 +27,7 @@ jobs:
 
     environment: deploy
     env: 
-      DOCKER_IMAGE: ghcr.io/lfgappeu/lfg-api:latest
+      DOCKER_IMAGE: ghcr.io/bolhaapp/bolha-api:latest
 
     permissions: 
       contents: read
@@ -93,6 +93,6 @@ jobs:
             docker-compose up -d
 
             # make sure container is running
-            docker ps --format '{{.Names}}' | grep -q "lfgapi" || { echo "Error: Container is not running."; exit 1; }
+            docker ps --format '{{.Names}}' | grep -q "bolhaapi" || { echo "Error: Container is not running."; exit 1; }
 
     

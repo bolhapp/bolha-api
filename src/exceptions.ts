@@ -46,14 +46,14 @@ export class ValidationError extends Error {
     }
 
     // not fully sure whether we actually wanna log this to sentry
-    logMessage(`[SwValidation]: ${statusMessage}`, {
+    logMessage(`[validation]: ${statusMessage}`, {
       level: "debug",
       extra: { validationPayload: { errors, statusCode, statusMessage, errorCode }, error },
     });
   }
 }
 
-export class LfgError extends Error {
+export class BolhaError extends Error {
   constructor(message: string, payload?: Record<string, any>) {
     super("Unexpected error");
 

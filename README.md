@@ -1,8 +1,8 @@
-# lfg
+# bolha
 
 ### setup
 
-Projet uses node 22.5.1 or higher and yarn 4+
+Project uses node >= 23.8 and yarn 4+
 
 To setup yarn 4 run
 
@@ -14,20 +14,25 @@ To setup yarn 4 run
 
 to start the api locally, you'll need a postgres connection, create a .env file based on .env.example and then run `yarn dev`
 
+
 #### postgres docker
 
 run a postgres container
 
-`docker run --name lfg -e POSTGRES_PASSWORD=mysecretpassword -v lfg:/var/lib/postgresql/data -p 5432:5432 -d postgres`
+`docker run --name bolha -e POSTGRES_PASSWORD=mysecretpassword -v bolha:/var/lib/postgresql/data -p 5432:5432 -d postgres`
 
 connect to container
 
-`docker exec -it lfg psql -U postgres`
+`docker exec -it bolha psql -U postgres`
 
 create the database
 
-`docker exec -it lfg psql -U postgres -c "CREATE DATABASE lfg;"`
+`docker exec -it bolha psql -U postgres -c "CREATE DATABASE bolha;"`
+
+##### Run migrations
+
+Now that you have your DB, you need to populate it, run `yarn db:migrate`
 
 ## Running scripts
 
-To run scripts you need to use `ts-node` and register the pathings. You can either do it using `yarn script <script path> ` or manbually type `ts-node -r tsconfig-paths/register <script path>`
+To run scripts you need to use `ts-node` and register the pathings. You can either do it using `yarn script <script path> ` or manually type `ts-node -r tsconfig-paths/register <script path>`

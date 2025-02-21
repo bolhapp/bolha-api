@@ -11,9 +11,9 @@ import addNotificationsRoutes from "./notifications.route";
 const router = new Router();
 
 router
-  .get("/api/v1/health", (ctx) => (ctx.body = "OK"))
+  .get("/api/health", (ctx) => (ctx.body = "OK"))
 
-  .get("/api/v1/version", (ctx) => (ctx.body = { minVersion: 1, version: parseFloat(version) }));
+  .get("/api/version", (ctx) => (ctx.body = { minVersion: 1, version: parseFloat(version) }));
 
 addAuthRoutes(router);
 addActivtyTypesRoutes(router);

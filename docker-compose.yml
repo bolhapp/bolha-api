@@ -2,17 +2,17 @@ version: "3"
 
 services:
   db:
-    container_name: lfg-db
+    container_name: bolha-db
     image: "postgres"
     environment:
       POSTGRES_PASSWORD: "mysecretpassword"
     ports:
       - 5432:5432
     volumes:
-      - lfg:/var/lib/postgresql/data -p
+      - bolha:/var/lib/postgresql/data -p
 
   api:
-    container_name: lfg-api
+    container_name: bolha-api
     build: .
     environment:
       PORT: 3000
@@ -32,4 +32,4 @@ services:
       - ./src:/usr/src/app
 
 volumes:
-  lfg:
+  bolha:

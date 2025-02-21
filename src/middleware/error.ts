@@ -2,7 +2,7 @@ import type { Middleware } from "koa";
 
 import { logError } from "@/services/sentry";
 import { UNEXPECTED_ERROR } from "@/errors/index.errors";
-import { LfgError, ValidationError } from "@/exceptions";
+import { BolhaError, ValidationError } from "@/exceptions";
 
 export default function (): Middleware {
   return async (ctx, next) => {
@@ -15,7 +15,7 @@ export default function (): Middleware {
         return;
       }
 
-      if (!(error instanceof LfgError)) {
+      if (!(error instanceof BolhaError)) {
         logError(error);
       }
 

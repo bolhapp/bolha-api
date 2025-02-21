@@ -3,7 +3,7 @@ import { File } from "@koa/multer";
 import type { ParameterizedContext } from "koa";
 
 import { getValidatedInput } from "@/utils/request";
-import { LfgError } from "@/exceptions";
+import { BolhaError } from "@/exceptions";
 import {
   createActivity,
   deleteActivity,
@@ -58,7 +58,7 @@ export const create = async (ctx: ParameterizedContext) => {
   const newActivity = await createActivity(ctx.user!.id, activity);
 
   if (!newActivity) {
-    throw new LfgError("[activity.module] failed to create activity", activity);
+    throw new BolhaError("[activity.module] failed to create activity", activity);
   }
 
   // upload pics if they exist
@@ -82,7 +82,7 @@ export const remove = async (ctx: ParameterizedContext) => {
   const pics = await deleteActivity(request.id, ctx.user!.id);
 
   if (!pics) {
-    throw new LfgError("[activity.module] failed to delete pics when deleting activity", {
+    throw new BolhaError("[activity.module] failed to delete pics when deleting activity", {
       activityId: request.id,
     });
   }
@@ -153,7 +153,7 @@ export const update = async (ctx: ParameterizedContext) => {
   const updated = await updateActivity(ctx.params.id, activity, ctx.user!.id);
 
   if (!updated) {
-    throw new LfgError("[activity.module]: failed to update activity", {
+    throw new BolhaError("[activity.module]: failed to update activity", {
       ...activity,
       activityId: ctx.params.id,
     });
@@ -195,7 +195,7 @@ export const signup = async (ctx: ParameterizedContext) => {
   const newRequest = await createActivityRequest(ctx.user!.id, request.id);
 
   if (!newRequest) {
-    throw new LfgError("[activity.module]: failed to signup to activity", {
+    throw new BolhaError("[activity.module]: failed to signup to activity", {
       activityId: request.id,
     });
   }
@@ -203,7 +203,7 @@ export const signup = async (ctx: ParameterizedContext) => {
   const activity = await getActivity<{ createdBy: string }>(request.id, [], ["createdBy"]);
 
   if (!activity) {
-    throw new LfgError("[activity.module]: activity not found", { activityId: request.id });
+    throw new BolhaError("[activity.module]: activity not found", { activityId: request.id });
   }
 
   await createNotification({ userId: activity.createdBy, type: "newRequest", payload: newRequest });
@@ -236,7 +236,7 @@ export const reply = async (ctx: ParameterizedContext) => {
   );
 
   if (!updatedRequest) {
-    throw new LfgError("[activity.module]: failed to reply to activity", request);
+    throw new BolhaError("[activity.module]: failed to reply to activity", request);
   }
 
   await createNotification({
@@ -265,13 +265,13 @@ export const leave = async (ctx: ParameterizedContext) => {
   }
 
   if (!result) {
-    throw new LfgError("[activity.module]: failed to leave activity", request);
+    throw new BolhaError("[activity.module]: failed to leave activity", request);
   }
 
   const activity = await getActivity<{ createdBy: string }>(request.id, [], ["createdBy"]);
 
   if (!activity) {
-    throw new LfgError("[activity.module]: failed to get activity", { activityId: request.id });
+    throw new BolhaError("[activity.module]: failed to get activity", { activityId: request.id });
   }
 
   await createNotification({ userId: activity.createdBy, type: "userLeft", payload: result });
@@ -291,7 +291,7 @@ export const getPendingRequests = async (ctx: ParameterizedContext) => {
   const requests = await getActivityRequests(payload.id, payload.page);
 
   if (!requests) {
-    throw new LfgError("[activity.module]: failed to signup pending requests", payload);
+    throw new BolhaError("[activity.module]: failed to signup pending requests", payload);
   }
 
   ctx.body = requests.map((r) => {

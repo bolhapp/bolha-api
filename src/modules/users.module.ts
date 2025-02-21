@@ -6,7 +6,7 @@ import { emailValidator, pageValidator, sortOrderValidator } from "@/utils/valid
 import { getValidatedInput } from "@/utils/request";
 import type { GetOwnActivitiesPayload, User } from "@/types/user";
 import { USER_GENDER } from "@/db/schemas/users.schema";
-import { ValidationError, LfgError } from "@/exceptions";
+import { ValidationError, BolhaError } from "@/exceptions";
 import { USER_NOT_FOUND } from "@/errors/user.errors";
 import { EMAIL_TAKEN } from "@/errors/auth.errors";
 import { INVALID_PARAMS } from "@/errors/index.errors";
@@ -59,7 +59,7 @@ export const editUser = async (ctx: ParameterizedContext) => {
   const updated = await updateUser(ctx.user!.email, payload);
 
   if (!updated) {
-    throw new LfgError("[user.module]: failed to update user", payload);
+    throw new BolhaError("[user.module]: failed to update user", payload);
   }
 
   ctx.body = updated;
