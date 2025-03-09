@@ -56,7 +56,7 @@ export class ValidationError extends Error {
 export class BolhaError extends Error {
   constructor(message: string, payload?: Record<string, any>) {
     super("Unexpected error");
-
+    console.error('meesage', message)
     logError(message, { extra: { payload } });
   }
 }

@@ -25,6 +25,8 @@ export const createActivity = async (userId: string, payload: BaseActivity): Pro
       maxParticipants: activities.maxParticipants,
       difficulty: activities.difficulty,
       date: activities.date,
+      startTime: activities.startTime,
+      endTime: activities.endTime,
       restrictions: activities.restrictions,
       extraDetails: activities.extraDetails,
       pics: activities.pics,
@@ -173,7 +175,7 @@ export const getActivities = async ({
       id: activities.id,
       name: activities.name,
       createdAt: activities.createdAt,
-      description: activities.description,
+    description: activities.description,
       date: activities.date,
       online: activities.online,
       address: activities.address,
@@ -184,7 +186,7 @@ export const getActivities = async ({
       extraDetails: activities.extraDetails,
       updatedAt: activities.updatedAt,
       pics: activities.pics,
-      host: sql`(
+          host: sql`(
         SELECT jsonb_build_object('id', ${users.id}, 'name', ${users.name}, 'photo', ${users.picUrl}) 
         FROM users
         WHERE ${users.id} = ${activities.createdBy}      
@@ -208,15 +210,15 @@ export const getActivities = async ({
     .groupBy(users.id, activities.id)
     .leftJoin(
       userActivities,
-      and(eq(activities.id, userActivities.activityId), eq(userActivities.host, false)),
+      and(eq(activities.id, userActivities.activityId)),
     )
     .leftJoin(users, eq(userActivities.userId, users.id))
     .leftJoin(activityCategories, eq(activityCategories.activityId, activities.id))
     .where(and(...conditions))
     // @ts-expect-error TS complains about sortField being "any"
-    .orderBy(getOrder(sortOrder), activities[sortField])
+    .orderBy(getOrder(sortOrder)("activities." + activities[sortField]))
     .limit(PAGE_SIZE)
     .offset(page * PAGE_SIZE);
-
+  
   return results;
 };

@@ -21,8 +21,8 @@ const getValidInt = (int?: string, fallback: number = 0): number => {
 export const getAll = async (ctx: ParameterizedContext) => {
   const page = getValidInt(ctx.request?.query.page as string | undefined);
   const pageSize = getValidInt(ctx.request?.query.pageSize as string | undefined, 25);
-
-  ctx.body = getActivityTypes(page, pageSize);
+  const data = await getActivityTypes(page, pageSize);
+  ctx.body = data;
 };
 
 export const addActivityType = async (ctx: ParameterizedContext) => {

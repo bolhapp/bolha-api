@@ -63,14 +63,17 @@ export const register = async (ctx: ParameterizedContext) => {
     email: emailValidator,
     password: passwordValidator,
   });
-
+  console.log('asda', user);
   if (await userExists(user.email)) {
     throw new ValidationError(EMAIL_TAKEN);
   }
+  console.log('teste');
 
   const token = `${genToken(32)}-${dayjs().add(2, "days").unix()}`;
+  console.log('asda', user);
 
   const newUser = await createUser(user, token);
+  console.log('asda', user);
 
   if (!newUser) {
     throw new BolhaError("[auth.module]: failed to create user", user);

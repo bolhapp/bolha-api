@@ -30,32 +30,29 @@ import { createNotification } from "@/modules/notifications.module";
 import { buildImgUrl } from "@/utils";
 
 export const create = async (ctx: ParameterizedContext) => {
+  console.log('activity',ctx.request.body);
+
   const activity = getValidatedInput<BaseActivity>(ctx.request.body, {
     name: Joi.string().max(256).required(),
     description: Joi.string().required(),
     online: Joi.boolean().required(),
     address: Joi.when("online", {
-      is: true,
+      is: false,
       then: Joi.string().max(256).required(),
       otherwise: Joi.string().max(256),
     }),
-    activityTypes: Joi.string()
-      .custom((value, helper) => {
-        try {
-          return value.split(",").map((i: string) => i.trim());
-        } catch (_) {
-          return helper.error("any.invalid");
-        }
-      })
-      .required(),
+    activityTypes: Joi.array().required(),
     difficulty: Joi.number().max(5).min(0).required(),
     maxParticipants: Joi.number().required(),
     date: Joi.date().iso().min("now").required(),
+    endTime: Joi.string().required(),
+    startTime: Joi.string().required(),
     restrictions: Joi.string(),
     extraDetails: Joi.string(),
   });
-
+  console.log('activity',activity);
   const newActivity = await createActivity(ctx.user!.id, activity);
+  console.log('newActivity',newActivity);
 
   if (!newActivity) {
     throw new BolhaError("[activity.module] failed to create activity", activity);
@@ -177,7 +174,6 @@ export const getAll = async (ctx: ParameterizedContext) => {
     numParticipants: Joi.number(),
     difficulty: Joi.number(),
   });
-
   const result = await getActivities({ ...payload, userId: ctx.user!.id });
 
   ctx.body = result.map((act) => {

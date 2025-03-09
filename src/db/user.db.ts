@@ -102,15 +102,15 @@ export const verifyUser = async ({
     .set({ verified: true, token: null })
     .where(and(eq(users.token, token), eq(users.email, email)));
 
-  return (result.count || 0) > 0;
-};
+    return (result.rowCount || 0) > 0;
+  };
 
 export const userExists = async (email: string): Promise<boolean> => {
   const result = await db
     .select({ count: sql`count(*)` })
     .from(users)
     .where(eq(users.email, email));
-
+  console.log('nuserExists');
   return (result[0].count as number) > 0;
 };
 
