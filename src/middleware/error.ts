@@ -9,6 +9,7 @@ export default function (): Middleware {
     try {
       await next();
     } catch (error) {
+      
       if (error instanceof ValidationError) {
         ctx.status = error.statusCode;
         ctx.body = error;

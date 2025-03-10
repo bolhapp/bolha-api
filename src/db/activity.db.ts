@@ -186,7 +186,7 @@ export const getActivities = async ({
       extraDetails: activities.extraDetails,
       updatedAt: activities.updatedAt,
       pics: activities.pics,
-          host: sql`(
+        host: sql`(
         SELECT jsonb_build_object('id', ${users.id}, 'name', ${users.name}, 'photo', ${users.picUrl}) 
         FROM users
         WHERE ${users.id} = ${activities.createdBy}      

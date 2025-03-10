@@ -30,7 +30,6 @@ import { createNotification } from "@/modules/notifications.module";
 import { buildImgUrl } from "@/utils";
 
 export const create = async (ctx: ParameterizedContext) => {
-  console.log('activity',ctx.request.body);
 
   const activity = getValidatedInput<BaseActivity>(ctx.request.body, {
     name: Joi.string().max(256).required(),
@@ -50,9 +49,7 @@ export const create = async (ctx: ParameterizedContext) => {
     restrictions: Joi.string(),
     extraDetails: Joi.string(),
   });
-  console.log('activity',activity);
   const newActivity = await createActivity(ctx.user!.id, activity);
-  console.log('newActivity',newActivity);
 
   if (!newActivity) {
     throw new BolhaError("[activity.module] failed to create activity", activity);

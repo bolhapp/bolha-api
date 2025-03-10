@@ -110,8 +110,8 @@ export const userExists = async (email: string): Promise<boolean> => {
     .select({ count: sql`count(*)` })
     .from(users)
     .where(eq(users.email, email));
-  console.log('nuserExists');
-  return (result[0].count as number) > 0;
+
+    return (result[0].count as number) > 0;
 };
 
 export const updateUser = async (email: string, payload: Partial<User>) => {
