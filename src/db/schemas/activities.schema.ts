@@ -33,14 +33,16 @@ export const activities = pgTable(
     maxParticipants: integer("max_participants").notNull(),
     difficulty: integer("difficulty").notNull(),
     date: timestamp("date", { withTimezone: true }).notNull(),
+    startTime: text("startTime"),
+    endTime: text("endTime"),
     restrictions: text("restrictions"),
     extraDetails: text("extraDetails"),
     pics: varchar("pics", { length: 256 }).array(),
   },
-  (activities) => ({
-    onlineIdx: index("acitivity_online_idx").on(activities.online),
-    difficultyIdx: index("activity_difficulty_idx").on(activities.difficulty),
-  }),
+  (activities) => [
+    index("acitivity_online_idx").on(activities.online),
+    index("activity_difficulty_idx").on(activities.difficulty),
+  ],
 );
 
 export const activityRequests = pgTable("activity_requests", {

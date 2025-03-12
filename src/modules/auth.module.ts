@@ -63,7 +63,6 @@ export const register = async (ctx: ParameterizedContext) => {
     email: emailValidator,
     password: passwordValidator,
   });
-
   if (await userExists(user.email)) {
     throw new ValidationError(EMAIL_TAKEN);
   }

@@ -4009,6 +4009,7 @@ __metadata:
     passport-jwt: "npm:^4.0.1"
     pg: "npm:^8.13.3"
     pino: "npm:^9.6.0"
+    postgres: "npm:^3.4.5"
     prettier: "npm:^3.5.1"
     sharp: "npm:^0.33.5"
     ts-node: "npm:^10.9.2"
@@ -7267,6 +7268,13 @@ __metadata:
   version: 1.1.4
   resolution: "postgres-range@npm:1.1.4"
   checksum: 10c0/254494ef81df208e0adeae6b66ce394aba37914ea14c7ece55a45fb6691b7db04bee74c825380a47c887a9f87158fd3d86f758f9cc60b76d3a38ce5aca7912e8
+  languageName: node
+  linkType: hard
+
+"postgres@npm:^3.4.5":
+  version: 3.4.5
+  resolution: "postgres@npm:3.4.5"
+  checksum: 10c0/53415acea77e97bdc1eeb861048f34964e2236e4d4d42f408fc9b901e62bfcf7443a487ebfdad18b57b468c6e297bf8d22097106a200f62eb1262eb5a71355df
   languageName: node
   linkType: hard
 

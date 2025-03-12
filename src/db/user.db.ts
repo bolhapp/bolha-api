@@ -102,8 +102,8 @@ export const verifyUser = async ({
     .set({ verified: true, token: null })
     .where(and(eq(users.token, token), eq(users.email, email)));
 
-  return (result.count || 0) > 0;
-};
+    return (result.rowCount || 0) > 0;
+  };
 
 export const userExists = async (email: string): Promise<boolean> => {
   const result = await db
@@ -111,7 +111,7 @@ export const userExists = async (email: string): Promise<boolean> => {
     .from(users)
     .where(eq(users.email, email));
 
-  return (result[0].count as number) > 0;
+    return (result[0].count as number) > 0;
 };
 
 export const updateUser = async (email: string, payload: Partial<User>) => {

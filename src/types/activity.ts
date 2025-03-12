@@ -22,6 +22,8 @@ export interface BaseActivity {
   date: Date;
   restrictions?: string;
   extraDetails?: string;
+  startTime?: string;
+  endTime?: string;
 }
 
 export interface Activity extends BaseActivity {
